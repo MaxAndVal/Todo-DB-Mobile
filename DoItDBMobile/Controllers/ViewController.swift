@@ -21,6 +21,15 @@ class ViewController: UIViewController {
         
     }
     
+    //MARK:- prepare
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "editItem"
+        {
+            let destVC = segue.destination as! EditItemViewController
+            destVC.newItem = items[(tableView.indexPath(for: sender as! UITableViewCell)?.row)!]
+        }
+    }
+    
     //MARK:- Actions
     @IBAction func addItem(_ sender: UIBarButtonItem) {
         
