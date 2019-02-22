@@ -13,12 +13,25 @@ class ViewController: UIViewController {
     @IBOutlet weak var navigationBar: UINavigationBar!
     @IBOutlet weak var tableView: UITableView!
     
+    static var documentDirectory : URL {
+        return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    }
+    
+    static var dataFileUrl : URL {
+        return documentDirectory.appendingPathComponent("Checklists").appendingPathExtension("json")
+    }
+    
     var items = [TodoItem]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
+        
+    }
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder : aDecoder)
+        loadTodoList()
     }
     
     //MARK:- Actions
@@ -34,6 +47,29 @@ class ViewController: UIViewController {
             }
             self.items.append(TodoItem(title: newItemTitle, checkmark: false))
             self.tableView.insertRows(at: [IndexPath(item: self.items.count - 1, section: 0)], with: .automatic)
+        }
+        
+        func savetodoList(){
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .prettyPrinted
+            do {
+                let data = try encoder.encode(items)
+                try data.write(to: ViewController.dataFileUrl)
+                print(String(data: data, encoding: .utf8)!)
+            } catch {
+                print(error)
+            }
+        }
+        func loadTodoList(){
+            print("is loading")
+            let decoder = JSONDecoder()
+            do {
+                let data = try Data(contentsOf: ViewController.dataFileUrl)
+                items = try decoder.decode([TodoItem].self, from: data)
+            } catch {
+                print(error)
+                
+            }
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
