@@ -31,7 +31,16 @@ class ViewController: UIViewController {
     }
     required init?(coder aDecoder: NSCoder) {
         super.init(coder : aDecoder)
-        loadTodoList()
+            loadTodoList()
+    }
+    
+    //MARK:- prepare
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "editItem"
+        {
+            let destVC = segue.destination as! EditItemViewController
+            destVC.newItem = items[(tableView.indexPath(for: sender as! UITableViewCell)?.row)!]
+        }
     }
     
     //MARK:- Actions
@@ -49,29 +58,6 @@ class ViewController: UIViewController {
             self.tableView.insertRows(at: [IndexPath(item: self.items.count - 1, section: 0)], with: .automatic)
         }
         
-        func savetodoList(){
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = .prettyPrinted
-            do {
-                let data = try encoder.encode(items)
-                try data.write(to: ViewController.dataFileUrl)
-                print(String(data: data, encoding: .utf8)!)
-            } catch {
-                print(error)
-            }
-        }
-        func loadTodoList(){
-            print("is loading")
-            let decoder = JSONDecoder()
-            do {
-                let data = try Data(contentsOf: ViewController.dataFileUrl)
-                items = try decoder.decode([TodoItem].self, from: data)
-            } catch {
-                print(error)
-                
-            }
-        }
-        
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
         
         alertController.addTextField { (textField) in
@@ -82,6 +68,29 @@ class ViewController: UIViewController {
         alertController.addAction(cancelAction)
         present(alertController, animated: true)
         
+    }
+    
+    func savetodoList(){
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted
+        do {
+            let data = try encoder.encode(items)
+            try data.write(to: ViewController.dataFileUrl)
+            print(String(data: data, encoding: .utf8)!)
+        } catch {
+            print(error)
+        }
+    }
+    func loadTodoList(){
+        print("is loading")
+        let decoder = JSONDecoder()
+        do {
+            let data = try Data(contentsOf: ViewController.dataFileUrl)
+            items = try decoder.decode([TodoItem].self, from: data)
+        } catch {
+            print(error)
+            
+        }
     }
     
     @IBAction func editItem() {
