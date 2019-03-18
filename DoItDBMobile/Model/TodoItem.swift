@@ -8,19 +8,19 @@
 
 import UIKit
 
-class TodoItem : Codable{
-    
-    var title: String
-    var checked: Bool
-    
-    init(title: String, checkmark: Bool=false) {
-        self.title = title
-        checked = checkmark
-    }
-    
-    func toggle() {
-        checked = !checked
-    }
-    
-}
+//class TodoItem : Codable{
+//
+//    var title: String
+//    var checked: Bool
+//
+//    init(title: String, checkmark: Bool=false) {
+//        self.title = title
+//        checked = checkmark
+//    }
+//
+//    func toggle() {
+//        checked = !checked
+//    }
+//
+//}
 

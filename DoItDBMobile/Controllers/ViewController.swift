@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class ViewController: UIViewController {
     
@@ -22,6 +23,7 @@ class ViewController: UIViewController {
     }
     
     var items = [TodoItem]()
+    let context = DataManager.SharedDataManager.context
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,7 +33,7 @@ class ViewController: UIViewController {
     }
     required init?(coder aDecoder: NSCoder) {
         super.init(coder : aDecoder)
-            loadTodoList()
+            loadItems()
     }
     
     //MARK:- prepare
@@ -44,7 +46,7 @@ class ViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        savetodoList()
+        saveItems()
     }
     
     //MARK:- Actions
@@ -58,9 +60,12 @@ class ViewController: UIViewController {
             if (newItemTitle == "") {
                 newItemTitle = "newItem \(self.items.count + 1)"
             }
-            self.items.append(TodoItem(title: newItemTitle, checkmark: false))
+            let newItem = TodoItem(context: self.context)
+            newItem.checkmark = false
+            newItem.title = newItemTitle
+            self.items.append(newItem)
             self.tableView.insertRows(at: [IndexPath(item: self.items.count - 1, section: 0)], with: .automatic)
-            self.savetodoList()
+            self.saveItems()
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
@@ -75,28 +80,28 @@ class ViewController: UIViewController {
         
     }
     
-    func savetodoList(){
-        print("save todo")
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted
+    func saveItems() {
         do {
-            let data = try encoder.encode(items)
-            try data.write(to: ViewController.dataFileUrl)
-            print(String(data: data, encoding: .utf8)!)
-        } catch {
-            print(error)
+            try self.context.save()
+        } catch let error as NSError {
+            print("Could not save data -> error : \(error)")
         }
     }
-    func loadTodoList(){
-        print("is loading")
-        let decoder = JSONDecoder()
+    
+    func loadItems() {
+        let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
         do {
-            let data = try Data(contentsOf: ViewController.dataFileUrl)
-            items = try decoder.decode([TodoItem].self, from: data)
-        } catch {
-            print(error)
+            let fetchedResults = try self.context.fetch(fetchRequest)
+            let results = fetchedResults as [NSManagedObject]
             
+            for item in results {
+                items.append(item as! TodoItem)
+            }
+            //items = results as! [TodoItem]
+        } catch let error as NSError {
+            print("Could not fetch : \(error)")
         }
+    
     }
     
     @IBAction func editItem() {
@@ -126,12 +131,12 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cellidentifier") as! CheckItemTableViewCell
         cell.cellTextField.text = items[indexPath.row].title
-        cell.checkmark.isHidden = !items[indexPath.row].checked
+        cell.checkmark.isHidden = !items[indexPath.row].checkmark
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        items[indexPath.row].toggle()
+        items[indexPath.row].checkmark = !items[indexPath.row].checkmark
         tableView.reloadRows(at: [indexPath], with: .automatic)
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -141,7 +146,7 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
         if (editingStyle == .delete) {
             items.remove(at: indexPath.item)
             tableView.deleteRows(at: [indexPath], with: .automatic)
-            savetodoList()
+            saveItems()
         }
         
     }
