@@ -43,6 +43,10 @@ class ViewController: UIViewController {
         }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        savetodoList()
+    }
+    
     //MARK:- Actions
     @IBAction func addItem(_ sender: UIBarButtonItem) {
         
@@ -56,6 +60,7 @@ class ViewController: UIViewController {
             }
             self.items.append(TodoItem(title: newItemTitle, checkmark: false))
             self.tableView.insertRows(at: [IndexPath(item: self.items.count - 1, section: 0)], with: .automatic)
+            self.savetodoList()
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
@@ -71,6 +76,7 @@ class ViewController: UIViewController {
     }
     
     func savetodoList(){
+        print("save todo")
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
         do {
@@ -113,7 +119,6 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
         return items.count
     }
     
@@ -136,6 +141,7 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
         if (editingStyle == .delete) {
             items.remove(at: indexPath.item)
             tableView.deleteRows(at: [indexPath], with: .automatic)
+            savetodoList()
         }
         
     }
