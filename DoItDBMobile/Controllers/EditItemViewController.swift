@@ -14,7 +14,7 @@ class EditItemViewController: UIViewController {
     var newItem: TodoItem?
     var catList = ["Cat1", "Cat2", "Cat3", "Cat4"]
     var selectedCategory = ""
-
+    
     @IBOutlet weak var tf: UITextField!
     @IBOutlet weak var categoryPicker: UIPickerView!
     @IBOutlet weak var tv_description: UITextView!
@@ -78,7 +78,7 @@ extension EditItemViewController : UIPickerViewDelegate, UIPickerViewDataSource 
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         self.selectedCategory = catList[row]
         print(selectedCategory)
-
+        
         return catList[row]
     }
     

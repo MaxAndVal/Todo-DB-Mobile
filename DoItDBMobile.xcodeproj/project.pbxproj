@@ -13,7 +13,6 @@
 		9C381A06221FEEE50061D139 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9C381A04221FEEE50061D139 /* Main.storyboard */; };
 		9C381A08221FEEE70061D139 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9C381A07221FEEE70061D139 /* Assets.xcassets */; };
 		9C381A0B221FEEE70061D139 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9C381A09221FEEE70061D139 /* LaunchScreen.storyboard */; };
-		9C381A1622200FD30061D139 /* TodoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C381A1522200FD30061D139 /* TodoItem.swift */; };
 		9C381A18222039210061D139 /* CheckItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C381A17222039210061D139 /* CheckItemTableViewCell.swift */; };
 		9C381A1A222040D80061D139 /* EditItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C381A19222040D80061D139 /* EditItemViewController.swift */; };
 		9C69979F223F9DE4006B562A /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C69979E223F9DE4006B562A /* DataManager.swift */; };
@@ -29,7 +28,6 @@
 		9C381A07221FEEE70061D139 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9C381A0A221FEEE70061D139 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9C381A0C221FEEE70061D139 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9C381A1522200FD30061D139 /* TodoItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoItem.swift; sourceTree = "<group>"; };
 		9C381A17222039210061D139 /* CheckItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckItemTableViewCell.swift; sourceTree = "<group>"; };
 		9C381A19222040D80061D139 /* EditItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditItemViewController.swift; sourceTree = "<group>"; };
 		9C69979E223F9DE4006B562A /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
@@ -81,7 +79,6 @@
 		9C381A1222200F8E0061D139 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				9C381A1522200FD30061D139 /* TodoItem.swift */,
 				9C86DCF7223F8D3B006952BA /* DoItDBMobile.xcdatamodeld */,
 			);
 			path = Model;
@@ -187,7 +184,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				9C381A03221FEEE40061D139 /* ViewController.swift in Sources */,
-				9C381A1622200FD30061D139 /* TodoItem.swift in Sources */,
 				9C381A1A222040D80061D139 /* EditItemViewController.swift in Sources */,
 				9C69979F223F9DE4006B562A /* DataManager.swift in Sources */,
 				9C381A01221FEEE40061D139 /* AppDelegate.swift in Sources */,

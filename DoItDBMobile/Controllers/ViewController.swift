@@ -164,7 +164,7 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
             
         }else{
             items[indexPath.row].checkmark = !items[indexPath.row].checkmark
-
+            
         }
         tableView.reloadRows(at: [indexPath], with: .automatic)
         tableView.deselectRow(at: indexPath, animated: true)
