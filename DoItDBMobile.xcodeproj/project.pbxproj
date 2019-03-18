@@ -15,6 +15,7 @@
 		9C381A1622200FD30061D139 /* TodoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C381A1522200FD30061D139 /* TodoItem.swift */; };
 		9C381A18222039210061D139 /* CheckItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C381A17222039210061D139 /* CheckItemTableViewCell.swift */; };
 		9C381A1A222040D80061D139 /* EditItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C381A19222040D80061D139 /* EditItemViewController.swift */; };
+		9C69979F223F9DE4006B562A /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C69979E223F9DE4006B562A /* DataManager.swift */; };
 		9C86DCF9223F8D3B006952BA /* DoItDBMobile.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9C86DCF7223F8D3B006952BA /* DoItDBMobile.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
@@ -29,6 +30,7 @@
 		9C381A1522200FD30061D139 /* TodoItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoItem.swift; sourceTree = "<group>"; };
 		9C381A17222039210061D139 /* CheckItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckItemTableViewCell.swift; sourceTree = "<group>"; };
 		9C381A19222040D80061D139 /* EditItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditItemViewController.swift; sourceTree = "<group>"; };
+		9C69979E223F9DE4006B562A /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		9C86DCF8223F8D3B006952BA /* DoItDBMobile.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DoItDBMobile.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -62,6 +64,7 @@
 		9C3819FF221FEEE40061D139 /* DoItDBMobile */ = {
 			isa = PBXGroup;
 			children = (
+				9C69979D223F9DC5006B562A /* Data */,
 				9C381A00221FEEE40061D139 /* AppDelegate.swift */,
 				9C381A1422200FA20061D139 /* Controllers */,
 				9C381A1322200F9A0061D139 /* Views */,
@@ -98,6 +101,14 @@
 				9C381A19222040D80061D139 /* EditItemViewController.swift */,
 			);
 			path = Controllers;
+			sourceTree = "<group>";
+		};
+		9C69979D223F9DC5006B562A /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				9C69979E223F9DE4006B562A /* DataManager.swift */,
+			);
+			path = Data;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -174,6 +185,7 @@
 				9C381A03221FEEE40061D139 /* ViewController.swift in Sources */,
 				9C381A1622200FD30061D139 /* TodoItem.swift in Sources */,
 				9C381A1A222040D80061D139 /* EditItemViewController.swift in Sources */,
+				9C69979F223F9DE4006B562A /* DataManager.swift in Sources */,
 				9C381A01221FEEE40061D139 /* AppDelegate.swift in Sources */,
 				9C381A18222039210061D139 /* CheckItemTableViewCell.swift in Sources */,
 				9C86DCF9223F8D3B006952BA /* DoItDBMobile.xcdatamodeld in Sources */,
