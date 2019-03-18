@@ -200,5 +200,15 @@ extension ViewController : UISearchBarDelegate {
             tableView.reloadData()
         }
     }
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        if(searchBar.text?.count==0){
+            isFiltered = false
+            tableView.reloadData()
+        }else{
+            isFiltered = true
+            filteredItems = items.filter { $0.title!.lowercased().contains(searchBar.text!.lowercased()) }
+            tableView.reloadData()
+        }
+    }
 }
 
