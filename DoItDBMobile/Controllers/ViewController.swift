@@ -13,12 +13,25 @@ class ViewController: UIViewController {
     @IBOutlet weak var navigationBar: UINavigationBar!
     @IBOutlet weak var tableView: UITableView!
     
+    static var documentDirectory : URL {
+        return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    }
+    
+    static var dataFileUrl : URL {
+        return documentDirectory.appendingPathComponent("Checklists").appendingPathExtension("json")
+    }
+    
     var items = [TodoItem]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
+        
+    }
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder : aDecoder)
+            loadTodoList()
     }
     
     //MARK:- prepare
@@ -28,6 +41,10 @@ class ViewController: UIViewController {
             let destVC = segue.destination as! EditItemViewController
             destVC.newItem = items[(tableView.indexPath(for: sender as! UITableViewCell)?.row)!]
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        savetodoList()
     }
     
     //MARK:- Actions
@@ -43,6 +60,7 @@ class ViewController: UIViewController {
             }
             self.items.append(TodoItem(title: newItemTitle, checkmark: false))
             self.tableView.insertRows(at: [IndexPath(item: self.items.count - 1, section: 0)], with: .automatic)
+            self.savetodoList()
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
@@ -55,6 +73,30 @@ class ViewController: UIViewController {
         alertController.addAction(cancelAction)
         present(alertController, animated: true)
         
+    }
+    
+    func savetodoList(){
+        print("save todo")
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted
+        do {
+            let data = try encoder.encode(items)
+            try data.write(to: ViewController.dataFileUrl)
+            print(String(data: data, encoding: .utf8)!)
+        } catch {
+            print(error)
+        }
+    }
+    func loadTodoList(){
+        print("is loading")
+        let decoder = JSONDecoder()
+        do {
+            let data = try Data(contentsOf: ViewController.dataFileUrl)
+            items = try decoder.decode([TodoItem].self, from: data)
+        } catch {
+            print(error)
+            
+        }
     }
     
     @IBAction func editItem() {
@@ -77,7 +119,6 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
         return items.count
     }
     
@@ -100,6 +141,7 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
         if (editingStyle == .delete) {
             items.remove(at: indexPath.item)
             tableView.deleteRows(at: [indexPath], with: .automatic)
+            savetodoList()
         }
         
     }
