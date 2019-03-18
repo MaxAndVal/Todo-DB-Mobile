@@ -13,27 +13,33 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var navigationBar: UINavigationBar!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var searchBar: UISearchBar!
+    var items = [TodoItem]()
+    let context = DataManager.SharedDataManager.context
+    var filteredItems = [TodoItem]()
+    var isFiltered = false
+    
+    
     
     static var documentDirectory : URL {
         return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
     
+    
     static var dataFileUrl : URL {
         return documentDirectory.appendingPathComponent("Checklists").appendingPathExtension("json")
     }
     
-    var items = [TodoItem]()
-    let context = DataManager.SharedDataManager.context
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        searchBar.delegate = self
         // Do any additional setup after loading the view, typically from a nib.
         
         
     }
     required init?(coder aDecoder: NSCoder) {
         super.init(coder : aDecoder)
-            loadItems()
+        loadItems()
     }
     
     //MARK:- prepare
@@ -41,7 +47,15 @@ class ViewController: UIViewController {
         if segue.identifier == "editItem"
         {
             let destVC = segue.destination as! EditItemViewController
-            destVC.newItem = items[(tableView.indexPath(for: sender as! UITableViewCell)?.row)!]
+            var itemToUpdate:TodoItem
+            
+            if(isFiltered){
+                //let test = filteredItems[(tableView.indexPath(for: sender as! UITableViewCell)?.row)!]
+                itemToUpdate = items.filter{$0 === filteredItems[(tableView.indexPath(for: sender as! UITableViewCell)?.row)!]}[0]
+            }else{
+                itemToUpdate = items[(tableView.indexPath(for: sender as! UITableViewCell)?.row)!]
+            }
+            destVC.newItem = itemToUpdate
         }
     }
     
@@ -64,7 +78,14 @@ class ViewController: UIViewController {
             newItem.checkmark = false
             newItem.title = newItemTitle
             self.items.append(newItem)
-            self.tableView.insertRows(at: [IndexPath(item: self.items.count - 1, section: 0)], with: .automatic)
+            if self.isFiltered
+            {
+                self.filteredItems.append(newItem)
+                self.tableView.insertRows(at: [IndexPath(item: self.filteredItems.count - 1, section: 0)], with: .automatic)
+            }else{
+                self.tableView.insertRows(at: [IndexPath(item: self.items.count - 1, section: 0)], with: .automatic)
+            }
+            
             self.saveItems()
         }
         
@@ -101,12 +122,14 @@ class ViewController: UIViewController {
         } catch let error as NSError {
             print("Could not fetch : \(error)")
         }
-    
+        
     }
     
     @IBAction func editItem() {
         
     }
+    
+    
     
     //MARK:- View Setup
     // not used
@@ -117,38 +140,65 @@ class ViewController: UIViewController {
         navigationBar.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
         navigationBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
     }
-
+    
 }
 
 extension ViewController : UITableViewDelegate, UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return items.count
+        return isFiltered ? filteredItems.count : items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cellidentifier") as! CheckItemTableViewCell
-        cell.cellTextField.text = items[indexPath.row].title
-        cell.checkmark.isHidden = !items[indexPath.row].checkmark
+        cell.cellTextField.text = isFiltered ? filteredItems[indexPath.row].title : items[indexPath.row].title
+        cell.checkmark.isHidden = isFiltered ? !filteredItems[indexPath.row].checkmark : !items[indexPath.row].checkmark
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        items[indexPath.row].checkmark = !items[indexPath.row].checkmark
+        if(isFiltered) {
+            filteredItems[indexPath.row].checkmark = !filteredItems[indexPath.row].checkmark
+            
+        }else{
+            items[indexPath.row].checkmark = !items[indexPath.row].checkmark
+
+        }
         tableView.reloadRows(at: [indexPath], with: .automatic)
         tableView.deselectRow(at: indexPath, animated: true)
+        saveItems()
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         
         if (editingStyle == .delete) {
-            items.remove(at: indexPath.item)
+            if isFiltered
+            {
+                items = items.filter{$0 !== filteredItems[indexPath.item]}
+                filteredItems.remove(at: indexPath.item)
+            }
+            else{
+                items.remove(at: indexPath.item)
+            }
             tableView.deleteRows(at: [indexPath], with: .automatic)
             saveItems()
         }
-        
     }
-    
 }
+
+extension ViewController : UISearchBarDelegate {
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if(searchBar.text?.count==0){
+            isFiltered = false
+            tableView.reloadData()
+        }else{
+            isFiltered = true
+            filteredItems = items.filter { $0.title!.lowercased().contains(searchBar.text!.lowercased()) }
+            tableView.reloadData()
+        }
+    }
+}
+

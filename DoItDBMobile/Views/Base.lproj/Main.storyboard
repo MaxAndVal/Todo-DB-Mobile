@@ -18,8 +18,13 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <searchBar contentMode="redraw" searchBarStyle="minimal" placeholder="Search..." translatesAutoresizingMaskIntoConstraints="NO" id="GuE-ZQ-prI">
+                                <rect key="frame" x="0.0" y="64" width="375" height="56"/>
+                                <offsetWrapper key="searchFieldBackgroundPositionAdjustment" horizontal="0.0" vertical="0.0"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </searchBar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="bBu-G8-Ql5">
-                                <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                                <rect key="frame" x="0.0" y="120" width="375" height="547"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="detailDisclosureButton" indentationWidth="10" reuseIdentifier="Cellidentifier" id="E1v-um-tmV" customClass="CheckItemTableViewCell" customModule="DoItDBMobile" customModuleProvider="target">
@@ -68,8 +73,12 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="bBu-G8-Ql5" secondAttribute="bottom" id="2S4-7I-clv"/>
-                            <constraint firstItem="bBu-G8-Ql5" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="FCR-ZS-iii"/>
+                            <constraint firstItem="bBu-G8-Ql5" firstAttribute="top" secondItem="GuE-ZQ-prI" secondAttribute="bottom" id="9JJ-L2-awH"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="bBu-G8-Ql5" secondAttribute="bottom" id="fp5-rK-HdN"/>
+                            <constraint firstItem="GuE-ZQ-prI" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="iGp-wZ-bEn"/>
                             <constraint firstItem="bBu-G8-Ql5" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="mLk-Fm-W8K"/>
+                            <constraint firstItem="GuE-ZQ-prI" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="mqo-sU-Fag"/>
+                            <constraint firstItem="GuE-ZQ-prI" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="uoV-8a-z59"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="bBu-G8-Ql5" secondAttribute="trailing" id="vqJ-jF-n4w"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
@@ -82,12 +91,13 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="searchBar" destination="GuE-ZQ-prI" id="zmg-FH-bhV"/>
                         <outlet property="tableView" destination="bBu-G8-Ql5" id="vLo-1f-TwF"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1178" y="-672"/>
+            <point key="canvasLocation" x="1176.8" y="-672.41379310344837"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="OiW-zW-a2X">
