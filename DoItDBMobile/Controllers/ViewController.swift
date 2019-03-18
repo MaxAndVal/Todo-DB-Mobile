@@ -18,24 +18,18 @@ class ViewController: UIViewController {
     let context = DataManager.SharedDataManager.context
     var filteredItems = [TodoItem]()
     var isFiltered = false
-    
-    
-    
-    static var documentDirectory : URL {
-        return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-    }
-    
-    
-    static var dataFileUrl : URL {
-        return documentDirectory.appendingPathComponent("Checklists").appendingPathExtension("json")
-    }
+    var categories = [Category]()
+    var sections = [[TodoItem]()]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         searchBar.delegate = self
-        // Do any additional setup after loading the view, typically from a nib.
-        
-        
+        if(self.categories.count == 0) {
+            let initCat = Category(context: context)
+            initCat.catName = "none"
+            self.categories.append(initCat)
+            saveItems()
+        }
     }
     required init?(coder aDecoder: NSCoder) {
         super.init(coder : aDecoder)
@@ -164,7 +158,7 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
             
         }else{
             items[indexPath.row].checkmark = !items[indexPath.row].checkmark
-
+            
         }
         tableView.reloadRows(at: [indexPath], with: .automatic)
         tableView.deselectRow(at: indexPath, animated: true)
