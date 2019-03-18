@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class ViewController: UIViewController {
     
@@ -14,6 +15,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     var items = [TodoItem]()
+    let context = DataManager.SharedDataManager.context
     var filteredItems = [TodoItem]()
     var isFiltered = false
     
@@ -28,7 +30,6 @@ class ViewController: UIViewController {
         return documentDirectory.appendingPathComponent("Checklists").appendingPathExtension("json")
     }
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         searchBar.delegate = self
@@ -38,7 +39,7 @@ class ViewController: UIViewController {
     }
     required init?(coder aDecoder: NSCoder) {
         super.init(coder : aDecoder)
-        loadTodoList()
+        loadItems()
     }
     
     //MARK:- prepare
@@ -49,8 +50,8 @@ class ViewController: UIViewController {
             var itemToUpdate:TodoItem
             
             if(isFiltered){
-                let test = filteredItems[(tableView.indexPath(for: sender as! UITableViewCell)?.row)!]
-                itemToUpdate = items.filter{$0 === test}[0]
+                //let test = filteredItems[(tableView.indexPath(for: sender as! UITableViewCell)?.row)!]
+                itemToUpdate = items.filter{$0 === filteredItems[(tableView.indexPath(for: sender as! UITableViewCell)?.row)!]}[0]
             }else{
                 itemToUpdate = items[(tableView.indexPath(for: sender as! UITableViewCell)?.row)!]
             }
@@ -59,7 +60,7 @@ class ViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        savetodoList()
+        saveItems()
     }
     
     //MARK:- Actions
@@ -73,9 +74,19 @@ class ViewController: UIViewController {
             if (newItemTitle == "") {
                 newItemTitle = "newItem \(self.items.count + 1)"
             }
-            self.items.append(TodoItem(title: newItemTitle, checkmark: false))
-            self.tableView.insertRows(at: [IndexPath(item: self.items.count - 1, section: 0)], with: .automatic)
-            self.savetodoList()
+            let newItem = TodoItem(context: self.context)
+            newItem.checkmark = false
+            newItem.title = newItemTitle
+            self.items.append(newItem)
+            if self.isFiltered
+            {
+                self.filteredItems.append(newItem)
+                self.tableView.insertRows(at: [IndexPath(item: self.filteredItems.count - 1, section: 0)], with: .automatic)
+            }else{
+                self.tableView.insertRows(at: [IndexPath(item: self.items.count - 1, section: 0)], with: .automatic)
+            }
+            
+            self.saveItems()
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
@@ -90,28 +101,28 @@ class ViewController: UIViewController {
         
     }
     
-    func savetodoList(){
-        print("save todo")
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted
+    func saveItems() {
         do {
-            let data = try encoder.encode(items)
-            try data.write(to: ViewController.dataFileUrl)
-            print(String(data: data, encoding: .utf8)!)
-        } catch {
-            print(error)
+            try self.context.save()
+        } catch let error as NSError {
+            print("Could not save data -> error : \(error)")
         }
     }
-    func loadTodoList(){
-        print("is loading")
-        let decoder = JSONDecoder()
+    
+    func loadItems() {
+        let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
         do {
-            let data = try Data(contentsOf: ViewController.dataFileUrl)
-            items = try decoder.decode([TodoItem].self, from: data)
-        } catch {
-            print(error)
+            let fetchedResults = try self.context.fetch(fetchRequest)
+            let results = fetchedResults as [NSManagedObject]
             
+            for item in results {
+                items.append(item as! TodoItem)
+            }
+            //items = results as! [TodoItem]
+        } catch let error as NSError {
+            print("Could not fetch : \(error)")
         }
+        
     }
     
     @IBAction func editItem() {
@@ -143,14 +154,21 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cellidentifier") as! CheckItemTableViewCell
         cell.cellTextField.text = isFiltered ? filteredItems[indexPath.row].title : items[indexPath.row].title
-        cell.checkmark.isHidden = isFiltered ? !filteredItems[indexPath.row].checked : !items[indexPath.row].checked
+        cell.checkmark.isHidden = isFiltered ? !filteredItems[indexPath.row].checkmark : !items[indexPath.row].checkmark
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        items[indexPath.row].toggle()
+        if(isFiltered) {
+            filteredItems[indexPath.row].checkmark = !filteredItems[indexPath.row].checkmark
+            
+        }else{
+            items[indexPath.row].checkmark = !items[indexPath.row].checkmark
+
+        }
         tableView.reloadRows(at: [indexPath], with: .automatic)
         tableView.deselectRow(at: indexPath, animated: true)
+        saveItems()
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
@@ -165,7 +183,7 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
                 items.remove(at: indexPath.item)
             }
             tableView.deleteRows(at: [indexPath], with: .automatic)
-            savetodoList()
+            saveItems()
         }
     }
 }
@@ -174,12 +192,11 @@ extension ViewController : UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if(searchBar.text?.count==0){
-            print("empty")
             isFiltered = false
             tableView.reloadData()
         }else{
             isFiltered = true
-            filteredItems = items.filter { $0.title.lowercased().contains(searchBar.text!.lowercased()) }
+            filteredItems = items.filter { $0.title!.lowercased().contains(searchBar.text!.lowercased()) }
             tableView.reloadData()
         }
     }

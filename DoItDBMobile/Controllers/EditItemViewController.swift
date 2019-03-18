@@ -22,7 +22,7 @@ class EditItemViewController: UIViewController {
     @objc func done() {
         let controller = navigationController?.viewControllers[0] as! ViewController
         newItem?.title = tf.text!
-        let position = controller.items.index(where: {$0 === newItem})!
+        let position = controller.isFiltered ? controller.filteredItems.index(where: {$0 === newItem})! : controller.items.index(where: {$0 === newItem})!
         controller.tableView.reloadRows(at: [IndexPath(row: position, section: 0)], with: .automatic)
         navigationController?.popViewController(animated: true)
     }
