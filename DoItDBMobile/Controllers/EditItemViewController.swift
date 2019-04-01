@@ -37,7 +37,6 @@ class EditItemViewController: UIViewController {
             let results = fetchedResults as [NSManagedObject]
             
             for item in results {
-                print("coucou")
                 catList.append(item as! Category)
             }
         } catch let error as NSError {
@@ -87,7 +86,6 @@ class EditItemViewController: UIViewController {
         dateFormatter.locale = Locale(identifier: "fr_FR")
         
         self.dateTextField.text =  "\(dateFormatter.string(from: date))"
-        print("here")
     }
     
     @objc func selectImage () {
@@ -111,8 +109,7 @@ class EditItemViewController: UIViewController {
         newItem?.category = selectedCategory
         let data = icone.image?.jpegData(compressionQuality: 0.5)
         newItem?.setValue(data, forKey: "image")
-        let position = controller.isFiltered ? controller.filteredItems.index(where: {$0 === newItem})! : controller.items.index(where: {$0 === newItem})!
-        controller.tableView.reloadRows(at: [IndexPath(row: position, section: 0)], with: .automatic)
+        controller.tableView.reloadData()
         controller.searchBarTextDidEndEditing(controller.searchBar)
         navigationController?.popViewController(animated: true)
     }
@@ -127,7 +124,6 @@ extension EditItemViewController : UIPickerViewDelegate, UIPickerViewDataSource 
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         self.selectedCategory = catList[row].catName!
-        print(selectedCategory)
         self.categoryTextField.text = selectedCategory
         return catList[row].catName
     }
