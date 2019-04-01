@@ -22,8 +22,9 @@ class EditItemViewController: UIViewController {
     private var categoryPicker = UIPickerView()
     @IBOutlet weak var categoryTextField: UITextField!
     @IBOutlet weak var tv_description: UITextView!
-    @IBOutlet weak var datePicker: UIDatePicker!
+    private var datePicker = UIDatePicker()
     @IBOutlet weak var icone: UIImageView!
+    @IBOutlet weak var dateTextField: UITextField!
     
     override func viewWillAppear(_ animated: Bool) {
         loadItems()
@@ -58,7 +59,8 @@ class EditItemViewController: UIViewController {
         tf.text = newItem?.title
         tv_description.text = newItem?.summary
         datePicker.date = newItem?.date ?? datePicker.date
-        
+        datePicker.datePickerMode = .date
+        datePicker.locale = Locale(identifier: "fr_FR")
         
         
         if((newItem?.category?.isEmpty ?? false)){
@@ -71,9 +73,22 @@ class EditItemViewController: UIViewController {
             icone.image = UIImage(named: "icon.png")
         }
         categoryTextField.inputView = categoryPicker
+        dateTextField.inputView = datePicker
+        datePicker.addTarget(self, action: #selector(chooseDate), for: .valueChanged)
+        dateTextField.addTarget(self, action: #selector(chooseDate), for: .editingDidBegin)
     }
     
-
+    @objc
+    func chooseDate() {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .none
+        let date: Date = datePicker.date
+        dateFormatter.locale = Locale(identifier: "fr_FR")
+        
+        self.dateTextField.text =  "\(dateFormatter.string(from: date))"
+        print("here")
+    }
     
     @objc func selectImage () {
         let picker = UIImagePickerController()
@@ -103,7 +118,7 @@ class EditItemViewController: UIViewController {
     }
 }
 
-extension EditItemViewController : UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate {
+extension EditItemViewController : UIPickerViewDelegate, UIPickerViewDataSource {
 
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         selectedCategory = catList[row].catName!
@@ -113,6 +128,7 @@ extension EditItemViewController : UIPickerViewDelegate, UIPickerViewDataSource,
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         self.selectedCategory = catList[row].catName!
         print(selectedCategory)
+        self.categoryTextField.text = selectedCategory
         return catList[row].catName
     }
     
@@ -124,15 +140,8 @@ extension EditItemViewController : UIPickerViewDelegate, UIPickerViewDataSource,
         return catList.count
     }
     
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        switch textField {
-        case categoryTextField:
-            categoryTextField.text = self.selectedCategory
-        default:
-            break
-        }
-    }
 }
+
 
 extension EditItemViewController : UINavigationControllerDelegate, UIImagePickerControllerDelegate {
     

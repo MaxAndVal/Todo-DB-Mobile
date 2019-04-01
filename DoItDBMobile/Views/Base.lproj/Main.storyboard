@@ -201,7 +201,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8Ai-II-37s">
-                                <rect key="frame" x="0.0" y="381.5" width="375" height="95"/>
+                                <rect key="frame" x="0.0" y="381.5" width="375" height="67"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Date" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fT5-36-Gdm">
                                         <rect key="frame" x="8" y="8" width="36" height="21"/>
@@ -209,29 +209,25 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <datePicker contentMode="scaleAspectFit" contentHorizontalAlignment="fill" contentVerticalAlignment="fill" datePickerMode="date" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="xy3-pb-RvK">
-                                        <rect key="frame" x="8" y="37" width="359" height="49"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="49" id="eTa-du-gRG"/>
-                                        </constraints>
-                                        <date key="date" timeIntervalSinceReferenceDate="574607755.76011503">
-                                            <!--2019-03-18 13:15:55 +0000-->
-                                        </date>
-                                    </datePicker>
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Choose a date" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0XM-Sf-gvz">
+                                        <rect key="frame" x="9.5" y="33" width="356" height="30"/>
+                                        <nil key="textColor"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="xy3-pb-RvK" firstAttribute="top" secondItem="fT5-36-Gdm" secondAttribute="bottom" constant="8" id="9hR-OT-bfe"/>
+                                    <constraint firstAttribute="bottom" secondItem="0XM-Sf-gvz" secondAttribute="bottom" constant="4" id="5cd-yu-m3O"/>
                                     <constraint firstItem="fT5-36-Gdm" firstAttribute="leading" secondItem="8Ai-II-37s" secondAttribute="leading" constant="8" id="CKX-JR-ZJm"/>
-                                    <constraint firstAttribute="trailing" secondItem="xy3-pb-RvK" secondAttribute="trailing" constant="8" id="Veg-8h-uXs"/>
-                                    <constraint firstItem="xy3-pb-RvK" firstAttribute="leading" secondItem="8Ai-II-37s" secondAttribute="leading" constant="8" id="WGl-oR-maj"/>
-                                    <constraint firstAttribute="height" constant="95" id="acs-2i-OyV"/>
+                                    <constraint firstItem="0XM-Sf-gvz" firstAttribute="width" secondItem="8Ai-II-37s" secondAttribute="width" multiplier="0.95" id="ID9-yv-Tyl"/>
                                     <constraint firstItem="fT5-36-Gdm" firstAttribute="top" secondItem="8Ai-II-37s" secondAttribute="top" constant="8" id="gcA-vZ-t7g"/>
-                                    <constraint firstAttribute="bottom" secondItem="xy3-pb-RvK" secondAttribute="bottom" constant="9" id="mt2-k3-LW8"/>
+                                    <constraint firstItem="0XM-Sf-gvz" firstAttribute="centerX" secondItem="8Ai-II-37s" secondAttribute="centerX" id="hsR-Nw-K8j"/>
+                                    <constraint firstItem="0XM-Sf-gvz" firstAttribute="top" secondItem="fT5-36-Gdm" secondAttribute="bottom" constant="4" id="pvi-y5-czu"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qI5-B5-ws4">
-                                <rect key="frame" x="0.0" y="484.5" width="375" height="90"/>
+                                <rect key="frame" x="0.0" y="456.5" width="375" height="90"/>
                                 <subviews>
                                     <imageView contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="GUI-OF-A7E">
                                         <rect key="frame" x="150.5" y="8" width="74" height="74"/>
@@ -284,7 +280,7 @@
                     </view>
                     <connections>
                         <outlet property="categoryTextField" destination="BvS-fl-ib5" id="UMt-SM-eIJ"/>
-                        <outlet property="datePicker" destination="xy3-pb-RvK" id="Hgt-ZG-twr"/>
+                        <outlet property="dateTextField" destination="0XM-Sf-gvz" id="cMu-Yb-iAK"/>
                         <outlet property="icone" destination="GUI-OF-A7E" id="YCv-CJ-d7a"/>
                         <outlet property="tf" destination="mGo-Fc-bFc" id="t8R-wb-2er"/>
                         <outlet property="tv_description" destination="KV0-QW-UCu" id="R1M-Zt-xzY"/>
