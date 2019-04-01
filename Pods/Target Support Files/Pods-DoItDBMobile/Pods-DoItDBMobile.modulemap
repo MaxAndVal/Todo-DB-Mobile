@@ -1,0 +1,6 @@
+framework module Pods_DoItDBMobile {
+  umbrella header "Pods-DoItDBMobile-umbrella.h"
+
+  export *
+  module * { export * }
+}

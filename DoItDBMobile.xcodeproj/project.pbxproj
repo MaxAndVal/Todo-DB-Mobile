@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		085D1331223FDD89005B5007 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 085D1330223FDD89005B5007 /* icon.png */; };
+		2972B0E919363103B0406BF3 /* Pods_DoItDBMobile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C508D70105CC524B61AAA805 /* Pods_DoItDBMobile.framework */; };
 		9C381A01221FEEE40061D139 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C381A00221FEEE40061D139 /* AppDelegate.swift */; };
 		9C381A03221FEEE40061D139 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C381A02221FEEE40061D139 /* ViewController.swift */; };
 		9C381A06221FEEE50061D139 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9C381A04221FEEE50061D139 /* Main.storyboard */; };
@@ -21,6 +22,7 @@
 
 /* Begin PBXFileReference section */
 		085D1330223FDD89005B5007 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
+		1A43B191DF9A25D1AAB200A3 /* Pods-DoItDBMobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DoItDBMobile.release.xcconfig"; path = "Target Support Files/Pods-DoItDBMobile/Pods-DoItDBMobile.release.xcconfig"; sourceTree = "<group>"; };
 		9C3819FD221FEEE40061D139 /* DoItDBMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DoItDBMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C381A00221FEEE40061D139 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9C381A02221FEEE40061D139 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -32,6 +34,8 @@
 		9C381A19222040D80061D139 /* EditItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditItemViewController.swift; sourceTree = "<group>"; };
 		9C69979E223F9DE4006B562A /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		9C86DCF8223F8D3B006952BA /* DoItDBMobile.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DoItDBMobile.xcdatamodel; sourceTree = "<group>"; };
+		A5D191CEBF345841BCDEF03F /* Pods-DoItDBMobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DoItDBMobile.debug.xcconfig"; path = "Target Support Files/Pods-DoItDBMobile/Pods-DoItDBMobile.debug.xcconfig"; sourceTree = "<group>"; };
+		C508D70105CC524B61AAA805 /* Pods_DoItDBMobile.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DoItDBMobile.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,17 +43,38 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2972B0E919363103B0406BF3 /* Pods_DoItDBMobile.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0A0530C5ACCB33D86C799166 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C508D70105CC524B61AAA805 /* Pods_DoItDBMobile.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4DCE737078874E515FAA0D97 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				A5D191CEBF345841BCDEF03F /* Pods-DoItDBMobile.debug.xcconfig */,
+				1A43B191DF9A25D1AAB200A3 /* Pods-DoItDBMobile.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		9C3819F4221FEEE40061D139 = {
 			isa = PBXGroup;
 			children = (
 				9C3819FF221FEEE40061D139 /* DoItDBMobile */,
 				9C3819FE221FEEE40061D139 /* Products */,
+				4DCE737078874E515FAA0D97 /* Pods */,
+				0A0530C5ACCB33D86C799166 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -118,9 +143,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9C381A0F221FEEE70061D139 /* Build configuration list for PBXNativeTarget "DoItDBMobile" */;
 			buildPhases = (
+				EBDCFB48F71ED1B73CEFCC68 /* [CP] Check Pods Manifest.lock */,
 				9C3819F9221FEEE40061D139 /* Sources */,
 				9C3819FA221FEEE40061D139 /* Frameworks */,
 				9C3819FB221FEEE40061D139 /* Resources */,
+				37646EEBAAB3066B8E99ADAF /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -177,6 +204,53 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		37646EEBAAB3066B8E99ADAF /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-DoItDBMobile/Pods-DoItDBMobile-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-DoItDBMobile/Pods-DoItDBMobile-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EBDCFB48F71ED1B73CEFCC68 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-DoItDBMobile-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		9C3819F9221FEEE40061D139 /* Sources */ = {
@@ -332,6 +406,7 @@
 		};
 		9C381A10221FEEE70061D139 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A5D191CEBF345841BCDEF03F /* Pods-DoItDBMobile.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -349,6 +424,7 @@
 		};
 		9C381A11221FEEE70061D139 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1A43B191DF9A25D1AAB200A3 /* Pods-DoItDBMobile.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
