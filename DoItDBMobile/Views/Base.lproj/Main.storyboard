@@ -227,32 +227,32 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qI5-B5-ws4">
-                                <rect key="frame" x="0.0" y="456.5" width="375" height="90"/>
+                                <rect key="frame" x="0.0" y="456.5" width="375" height="187"/>
                                 <subviews>
-                                    <imageView contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="GUI-OF-A7E">
-                                        <rect key="frame" x="150.5" y="8" width="74" height="74"/>
-                                        <accessibility key="accessibilityConfiguration">
-                                            <accessibilityTraits key="traits" button="YES" image="YES"/>
-                                        </accessibility>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="74" id="kIG-mx-UFR"/>
-                                            <constraint firstAttribute="width" constant="74" id="xM5-4C-h5j"/>
-                                        </constraints>
-                                    </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Icone" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CJb-Hy-Ln6">
                                         <rect key="frame" x="8" y="8" width="42" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <imageView contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="GUI-OF-A7E">
+                                        <rect key="frame" x="112.5" y="33" width="150" height="150"/>
+                                        <accessibility key="accessibilityConfiguration">
+                                            <accessibilityTraits key="traits" button="YES" image="YES"/>
+                                        </accessibility>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="GUI-OF-A7E" secondAttribute="height" multiplier="1:1" id="k8k-SS-XFH"/>
+                                        </constraints>
+                                    </imageView>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="GUI-OF-A7E" firstAttribute="centerX" secondItem="qI5-B5-ws4" secondAttribute="centerX" id="7vG-vE-I7o"/>
-                                    <constraint firstAttribute="height" constant="90" id="BRu-VI-Nq2"/>
-                                    <constraint firstItem="GUI-OF-A7E" firstAttribute="centerY" secondItem="qI5-B5-ws4" secondAttribute="centerY" id="dE2-o1-CdN"/>
+                                    <constraint firstItem="GUI-OF-A7E" firstAttribute="top" secondItem="CJb-Hy-Ln6" secondAttribute="bottom" constant="4" id="NNM-CS-f4D"/>
+                                    <constraint firstItem="GUI-OF-A7E" firstAttribute="width" secondItem="qI5-B5-ws4" secondAttribute="width" multiplier="0.4" id="cz7-Pc-xSW"/>
+                                    <constraint firstItem="GUI-OF-A7E" firstAttribute="centerX" secondItem="qI5-B5-ws4" secondAttribute="centerX" id="gV0-eX-T9P"/>
                                     <constraint firstItem="CJb-Hy-Ln6" firstAttribute="leading" secondItem="qI5-B5-ws4" secondAttribute="leading" constant="8" id="guA-Xa-pJo"/>
                                     <constraint firstItem="CJb-Hy-Ln6" firstAttribute="top" secondItem="qI5-B5-ws4" secondAttribute="top" constant="8" id="mBR-X2-3fX"/>
+                                    <constraint firstAttribute="bottom" secondItem="GUI-OF-A7E" secondAttribute="bottom" constant="4" id="rxS-zl-QFy"/>
                                 </constraints>
                             </view>
                         </subviews>
