@@ -28,8 +28,9 @@ class EditItemViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         loadItems()
-        categoryPicker.selectRow(1, inComponent: 0, animated: true)
+        
     }
+    
     func loadItems() {
         let fetchRequest: NSFetchRequest<Category> = NSFetchRequest<Category>(entityName: "Category")
         do {
@@ -69,9 +70,9 @@ class EditItemViewController: UIViewController {
         
         if newItem?.category?.isEmpty ?? false {
             newItem?.category = "none"
-        } else {
-            categoryTextField.text = newItem?.category
         }
+        
+        categoryTextField.text = newItem?.category
         
         if newItem?.date != nil {
             dateTextField.text = self.dateFormatter.string(from: newItem!.date!)
@@ -118,7 +119,7 @@ class EditItemViewController: UIViewController {
         let data = icone.image?.jpegData(compressionQuality: 0.5)
         newItem?.setValue(data, forKey: "image")
         let position = controller.isFiltered ? controller.filteredItems.index(where: {$0 === newItem})! : controller.items.index(where: {$0 === newItem})!
-        controller.tableView.reloadRows(at: [IndexPath(row: position, section: 0)], with: .automatic)
+        controller.tableView.reloadData()
         controller.searchBarTextDidEndEditing(controller.searchBar)
         navigationController?.popViewController(animated: true)
     }
@@ -134,7 +135,7 @@ extension EditItemViewController : UIPickerViewDelegate, UIPickerViewDataSource 
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         self.selectedCategory = catList[row].catName!
         print(selectedCategory)
-        self.categoryTextField.text = catList[row].catName!
+        self.categoryTextField.text = selectedCategory
         return catList[row].catName
     }
     
