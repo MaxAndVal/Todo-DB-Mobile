@@ -6,6 +6,8 @@ target 'DoItDBMobile' do
   use_frameworks!
   
   pod 'SnapKit', '~> 4.0.0'
+  pod 'IQKeyboardManagerSwift', '~> 6.0.0'
+
 
   # Pods for DoItDBMobile
 
