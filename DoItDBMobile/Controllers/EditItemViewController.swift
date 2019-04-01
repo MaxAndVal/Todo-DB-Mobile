@@ -19,7 +19,8 @@ class EditItemViewController: UIViewController {
 
 
     @IBOutlet weak var tf: UITextField!
-    @IBOutlet weak var categoryPicker: UIPickerView!
+    private var categoryPicker = UIPickerView()
+    @IBOutlet weak var categoryTextField: UITextField!
     @IBOutlet weak var tv_description: UITextView!
     @IBOutlet weak var datePicker: UIDatePicker!
     @IBOutlet weak var icone: UIImageView!
@@ -69,6 +70,7 @@ class EditItemViewController: UIViewController {
         } else {
             icone.image = UIImage(named: "icon.png")
         }
+        categoryTextField.inputView = categoryPicker
     }
     
 
@@ -101,7 +103,7 @@ class EditItemViewController: UIViewController {
     }
 }
 
-extension EditItemViewController : UIPickerViewDelegate, UIPickerViewDataSource {
+extension EditItemViewController : UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate {
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         selectedCategory = catList[row].catName!
@@ -119,6 +121,15 @@ extension EditItemViewController : UIPickerViewDelegate, UIPickerViewDataSource 
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return catList.count
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        switch textField {
+        case categoryTextField:
+            categoryTextField.text = self.selectedCategory
+        default:
+            break
+        }
     }
 }
 

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Qz0-Wy-zs1">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Qz0-Wy-zs1">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -147,39 +147,34 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3AE-R6-xDO">
-                                <rect key="frame" x="0.0" y="139" width="375" height="150"/>
+                                <rect key="frame" x="0.0" y="139" width="375" height="66.5"/>
                                 <subviews>
-                                    <pickerView contentMode="scaleToFill" horizontalCompressionResistancePriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="HI3-Xk-HIL">
-                                        <rect key="frame" x="8" y="40" width="359" height="102"/>
-                                        <accessibility key="accessibilityConfiguration" hint="Categorie" label="Categorie"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="102" id="kaT-DV-sSD"/>
-                                        </constraints>
-                                        <connections>
-                                            <outlet property="dataSource" destination="LKL-CY-nvr" id="yYS-hX-15n"/>
-                                            <outlet property="delegate" destination="LKL-CY-nvr" id="VqU-7s-JzO"/>
-                                        </connections>
-                                    </pickerView>
+
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Catégorie" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="z0z-Fb-LLg">
-                                        <rect key="frame" x="8" y="8" width="75" height="24"/>
+                                        <rect key="frame" x="8" y="8" width="75" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Choose a category" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="BvS-fl-ib5">
+                                        <rect key="frame" x="9.5" y="32.5" width="356" height="30"/>
+                                        <nil key="textColor"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="HI3-Xk-HIL" firstAttribute="top" secondItem="z0z-Fb-LLg" secondAttribute="bottom" constant="8" id="5JU-Cv-CiL"/>
-                                    <constraint firstItem="HI3-Xk-HIL" firstAttribute="leading" secondItem="3AE-R6-xDO" secondAttribute="leading" constant="8" id="7IG-jj-jas"/>
+                                    <constraint firstItem="BvS-fl-ib5" firstAttribute="centerX" secondItem="3AE-R6-xDO" secondAttribute="centerX" id="64v-Sd-xHe"/>
                                     <constraint firstItem="z0z-Fb-LLg" firstAttribute="leading" secondItem="3AE-R6-xDO" secondAttribute="leading" constant="8" id="9Y4-be-rER"/>
+                                    <constraint firstAttribute="bottom" secondItem="BvS-fl-ib5" secondAttribute="bottom" constant="4" id="Acw-HD-PNG"/>
                                     <constraint firstItem="z0z-Fb-LLg" firstAttribute="top" secondItem="3AE-R6-xDO" secondAttribute="top" constant="8" id="HHt-0V-eSp"/>
-                                    <constraint firstAttribute="height" constant="150" id="JGe-gs-dLg"/>
-                                    <constraint firstAttribute="trailing" secondItem="HI3-Xk-HIL" secondAttribute="trailing" constant="8" id="d9t-A7-Tx1"/>
-                                    <constraint firstAttribute="bottom" secondItem="HI3-Xk-HIL" secondAttribute="bottom" constant="8" id="wgG-eg-ZQp"/>
+                                    <constraint firstItem="BvS-fl-ib5" firstAttribute="top" secondItem="z0z-Fb-LLg" secondAttribute="bottom" constant="4" id="OBj-Ux-k6P"/>
+                                    <constraint firstItem="BvS-fl-ib5" firstAttribute="width" secondItem="3AE-R6-xDO" secondAttribute="width" multiplier="0.95" id="jLp-AO-dG6"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="85G-dE-c0m">
-                                <rect key="frame" x="0.0" y="297" width="375" height="160"/>
+                                <rect key="frame" x="0.0" y="213.5" width="375" height="160"/>
                                 <subviews>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="KV0-QW-UCu">
                                         <rect key="frame" x="8" y="37" width="359" height="115"/>
@@ -207,7 +202,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8Ai-II-37s">
-                                <rect key="frame" x="0.0" y="465" width="375" height="95"/>
+                                <rect key="frame" x="0.0" y="381.5" width="375" height="95"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Date" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fT5-36-Gdm">
                                         <rect key="frame" x="8" y="8" width="36" height="21"/>
@@ -237,7 +232,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qI5-B5-ws4">
-                                <rect key="frame" x="0.0" y="568" width="375" height="90"/>
+                                <rect key="frame" x="0.0" y="484.5" width="375" height="90"/>
                                 <subviews>
                                     <imageView contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="GUI-OF-A7E">
                                         <rect key="frame" x="150.5" y="8" width="74" height="74"/>
@@ -289,7 +284,7 @@
                         <viewLayoutGuide key="safeArea" id="6zK-UP-wE4"/>
                     </view>
                     <connections>
-                        <outlet property="categoryPicker" destination="HI3-Xk-HIL" id="iuy-7V-ro1"/>
+                        <outlet property="categoryTextField" destination="BvS-fl-ib5" id="UMt-SM-eIJ"/>
                         <outlet property="datePicker" destination="xy3-pb-RvK" id="Hgt-ZG-twr"/>
                         <outlet property="icone" destination="GUI-OF-A7E" id="YCv-CJ-d7a"/>
                         <outlet property="tf" destination="mGo-Fc-bFc" id="t8R-wb-2er"/>
