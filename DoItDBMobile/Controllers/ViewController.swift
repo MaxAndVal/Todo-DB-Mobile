@@ -29,7 +29,6 @@ class ViewController: UIViewController {
             self.categories.append(initCat)
             saveItems()
         }
-        print("items : ", items.count)
     }
     required init?(coder aDecoder: NSCoder) {
         super.init(coder : aDecoder)
@@ -47,7 +46,10 @@ class ViewController: UIViewController {
                 //let test = filteredItems[(tableView.indexPath(for: sender as! UITableViewCell)?.row)!]
                 itemToUpdate = items.filter{$0 === filteredItems[(tableView.indexPath(for: sender as! UITableViewCell)?.row)!]}[0]
             }else{
-                itemToUpdate = items[(tableView.indexPath(for: sender as! UITableViewCell)?.row)!]
+                let section = (tableView.indexPath(for: sender as! UITableViewCell)?.section)!
+                var tempTable = tempTableByCat(category: categories[section].catName!)
+                
+                itemToUpdate = tempTable[(tableView.indexPath(for: sender as! UITableViewCell)?.row)!]
             }
             destVC.newItem = itemToUpdate
         }
@@ -57,6 +59,24 @@ class ViewController: UIViewController {
         saveItems()
     }
     
+    func tempTableByCat(category : String = "none") -> [TodoItem] {
+        var tempTable = [TodoItem]()
+        
+        let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
+        fetchRequest.predicate = NSPredicate(format: "category contains[c] %@", category)
+        
+        do {
+            let fetchedResults = try self.context.fetch(fetchRequest)
+            let results = fetchedResults as [NSManagedObject]
+            for item in results {
+                tempTable.append(item as! TodoItem)
+            }
+        } catch let error as NSError {
+            print("Could not fetch : \(error)")
+        }
+        return tempTable
+    }
+    
     //MARK:- Actions
     @IBAction func addItem(_ sender: UIBarButtonItem) {
         
@@ -64,20 +84,21 @@ class ViewController: UIViewController {
         
         let addTask = UIAlertAction(title: "Ajouter une tâche", style: .default) { (action) in
             let tf = alertController.textFields?[0]
-            var newItemTitle = tf!.text!
-            if (newItemTitle == "") {
-                newItemTitle = "newItem \(self.items.count + 1)"
-            }
+            
+            let newItemTitle = tf!.text!
+            
             let newItem = TodoItem(context: self.context)
             newItem.checkmark = false
             newItem.title = newItemTitle
+            newItem.category = "none"
             self.items.append(newItem)
             if self.isFiltered
             {
                 self.filteredItems.append(newItem)
                 self.tableView.insertRows(at: [IndexPath(item: self.filteredItems.count - 1, section: 0)], with: .automatic)
             }else{
-                self.tableView.insertRows(at: [IndexPath(item: self.items.count - 1, section: 0)], with: .automatic)
+                var tempTable = self.tempTableByCat(category: "none")
+                self.tableView.insertRows(at: [IndexPath(item: tempTable.count - 1, section: 0)], with: .automatic)
             }
             
             self.saveItems()
@@ -89,13 +110,13 @@ class ViewController: UIViewController {
             let newItem = Category(context: self.context)
             newItem.catName = newTask
             self.categories.append(newItem)
-//            if self.isFiltered
-//            {
-//                self.filteredItems.append(newItem)
-//                self.tableView.insertRows(at: [IndexPath(item: self.filteredItems.count - 1, section: 0)], with: .automatic)
-//            }else{
-//                self.tableView.insertRows(at: [IndexPath(item: self.items.count - 1, section: 0)], with: .automatic)
-//            }
+            //            if self.isFiltered
+            //            {
+            //                self.filteredItems.append(newItem)
+            //                self.tableView.insertRows(at: [IndexPath(item: self.filteredItems.count - 1, section: 0)], with: .automatic)
+            //            }else{
+            //                self.tableView.insertRows(at: [IndexPath(item: self.items.count - 1, section: 0)], with: .automatic)
+            //            }
             
             self.saveItems()
         }
@@ -176,21 +197,14 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let title = categories[section].catName
-        return title
+        return isFiltered ? "Resultat de la recherche : " : title
     }
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        var nbOfRowsInSection = 0;
-        for item in items {
-            let cat = item.category ?? "none"
-            if(cat == categories[section].catName){
-                nbOfRowsInSection+=1
-            }
-        }
+        var tempTable = tempTableByCat(category: categories[section].catName!)
         
-        print("numberOfRowsInSection ", categories[section].catName!, " ",nbOfRowsInSection )
-        return isFiltered ? filteredItems.count : nbOfRowsInSection
+        return isFiltered ? filteredItems.count : tempTable.count
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -199,11 +213,26 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
+        var tempTable = [TodoItem]()
+        
+        let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
+        fetchRequest.predicate = NSPredicate(format: "category contains[c] %@", categories[indexPath.section].catName ?? "none")
+        do {
+            let fetchedResults = try self.context.fetch(fetchRequest)
+            let results = fetchedResults as [NSManagedObject]
+            for item in results {
+                tempTable.append(item as! TodoItem)
+            }
+        } catch let error as NSError {
+            print("Could not fetch : \(error)")
+        }
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cellidentifier") as! CheckItemTableViewCell
-        let task = isFiltered ? filteredItems[indexPath.row] : items[indexPath.row]
+        
+        let task = isFiltered ? filteredItems[indexPath.row] : tempTable[indexPath.row]
         //if(task.category == titleF)
-        cell.cellTextField.text = isFiltered ? task.title : task.title
-        cell.checkmark.isHidden = isFiltered ? !task.checkmark : !task.checkmark
+        cell.cellTextField.text = task.title
+        cell.checkmark.isHidden = !task.checkmark
         
         return cell
     }
@@ -230,7 +259,8 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
                 filteredItems.remove(at: indexPath.item)
             }
             else{
-                items.remove(at: indexPath.item)
+                //var tempTable = tempTableByCat(category: categories[indexPath.section].catName ?? "none" )
+                //let index = items.firstIndex{$0.category == tempTable[indexPath.row].category} ?? -1
             }
             tableView.deleteRows(at: [indexPath], with: .automatic)
             saveItems()
