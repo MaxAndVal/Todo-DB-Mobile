@@ -11,31 +11,24 @@ import CoreData
 
 class ViewController: UIViewController {
     
-    @IBOutlet weak var navigationBar: UINavigationBar!
+    var navigationBar: UINavigationBar!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     var items = [TodoItem]()
     let context = DataManager.SharedDataManager.context
     var filteredItems = [TodoItem]()
     var isFiltered = false
-    
-    
-    
-    static var documentDirectory : URL {
-        return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-    }
-    
-    
-    static var dataFileUrl : URL {
-        return documentDirectory.appendingPathComponent("Checklists").appendingPathExtension("json")
-    }
+    var categories = [Category]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         searchBar.delegate = self
-        // Do any additional setup after loading the view, typically from a nib.
-        
-        
+        if(self.categories.count == 0) {
+            let initCat = Category(context: context)
+            initCat.catName = "none"
+            self.categories.append(initCat)
+            saveItems()
+        }
     }
     required init?(coder aDecoder: NSCoder) {
         super.init(coder : aDecoder)
@@ -68,7 +61,7 @@ class ViewController: UIViewController {
         
         let alertController = UIAlertController(title: "ToDo", message: "New Item ?", preferredStyle: .alert)
         
-        let okAction = UIAlertAction(title: "OK", style: .default) { (action) in
+        let addTask = UIAlertAction(title: "Ajouter une tâche", style: .default) { (action) in
             let tf = alertController.textFields?[0]
             var newItemTitle = tf!.text!
             if (newItemTitle == "") {
@@ -89,13 +82,31 @@ class ViewController: UIViewController {
             self.saveItems()
         }
         
+        let addCat = UIAlertAction(title: "Ajouter une catégorie", style: .default) { (action) in
+            let tf = alertController.textFields?[0]
+            var newTask = tf!.text!
+            let newItem = Category(context: self.context)
+            newItem.catName = newTask
+            self.categories.append(newItem)
+//            if self.isFiltered
+//            {
+//                self.filteredItems.append(newItem)
+//                self.tableView.insertRows(at: [IndexPath(item: self.filteredItems.count - 1, section: 0)], with: .automatic)
+//            }else{
+//                self.tableView.insertRows(at: [IndexPath(item: self.items.count - 1, section: 0)], with: .automatic)
+//            }
+            
+            self.saveItems()
+        }
+        
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
         
         alertController.addTextField { (textField) in
             textField.placeholder = "titre ..."
         }
         
-        alertController.addAction(okAction)
+        alertController.addAction(addTask)
+        alertController.addAction(addCat)
         alertController.addAction(cancelAction)
         present(alertController, animated: true)
         
@@ -122,14 +133,19 @@ class ViewController: UIViewController {
         } catch let error as NSError {
             print("Could not fetch : \(error)")
         }
+        let fetchRequestCat: NSFetchRequest<Category> = NSFetchRequest<Category>(entityName: "Category")
+        do {
+            let fetchedResults = try self.context.fetch(fetchRequestCat)
+            let results = fetchedResults as [NSManagedObject]
+            
+            for item in results {
+                categories.append(item as! Category)
+            }
+        } catch let error as NSError {
+            print("Could not fetch : \(error)")
+        }
         
     }
-    
-    @IBAction func editItem() {
-        
-    }
-    
-    
     
     //MARK:- View Setup
     // not used
@@ -144,6 +160,11 @@ class ViewController: UIViewController {
 }
 
 extension ViewController : UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        let title = categories[section].catName
+        return title
+    }
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -164,7 +185,7 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
             
         }else{
             items[indexPath.row].checkmark = !items[indexPath.row].checkmark
-
+            
         }
         tableView.reloadRows(at: [indexPath], with: .automatic)
         tableView.deselectRow(at: indexPath, animated: true)

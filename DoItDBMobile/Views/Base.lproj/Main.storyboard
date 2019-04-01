@@ -155,6 +155,10 @@
                                         <constraints>
                                             <constraint firstAttribute="height" constant="102" id="kaT-DV-sSD"/>
                                         </constraints>
+                                        <connections>
+                                            <outlet property="dataSource" destination="LKL-CY-nvr" id="yYS-hX-15n"/>
+                                            <outlet property="delegate" destination="LKL-CY-nvr" id="VqU-7s-JzO"/>
+                                        </connections>
                                     </pickerView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Catégorie" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="z0z-Fb-LLg">
                                         <rect key="frame" x="8" y="8" width="75" height="24"/>
