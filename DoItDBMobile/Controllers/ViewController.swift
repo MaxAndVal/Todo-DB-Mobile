@@ -29,6 +29,7 @@ class ViewController: UIViewController {
             self.categories.append(initCat)
             saveItems()
         }
+        print("items : ", items.count)
     }
     required init?(coder aDecoder: NSCoder) {
         super.init(coder : aDecoder)
@@ -180,14 +181,30 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return isFiltered ? filteredItems.count : items.count
+        var nbOfRowsInSection = 0;
+        for item in items {
+            let cat = item.category ?? "none"
+            if(cat == categories[section].catName){
+                nbOfRowsInSection+=1
+            }
+        }
+        
+        print("numberOfRowsInSection ", categories[section].catName!, " ",nbOfRowsInSection )
+        return isFiltered ? filteredItems.count : nbOfRowsInSection
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return isFiltered ? filteredItems.count : categories.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cellidentifier") as! CheckItemTableViewCell
-        cell.cellTextField.text = isFiltered ? filteredItems[indexPath.row].title : items[indexPath.row].title
-        cell.checkmark.isHidden = isFiltered ? !filteredItems[indexPath.row].checkmark : !items[indexPath.row].checkmark
+        let task = isFiltered ? filteredItems[indexPath.row] : items[indexPath.row]
+        //if(task.category == titleF)
+        cell.cellTextField.text = isFiltered ? task.title : task.title
+        cell.checkmark.isHidden = isFiltered ? !task.checkmark : !task.checkmark
+        
         return cell
     }
     
