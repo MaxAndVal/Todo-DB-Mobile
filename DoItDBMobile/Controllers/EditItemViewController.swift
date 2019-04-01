@@ -92,7 +92,6 @@ class EditItemViewController: UIViewController {
     @objc
     func chooseDate() {
         let date: Date = datePicker.date
-        
         self.dateTextField.text =  "\(self.dateFormatter.string(from: date))"
         print("here")
     }
@@ -118,7 +117,7 @@ class EditItemViewController: UIViewController {
         newItem?.category = categoryTextField.text
         let data = icone.image?.jpegData(compressionQuality: 0.5)
         newItem?.setValue(data, forKey: "image")
-//        let position = controller.isFiltered ? controller.filteredItems.index(where: {$0 === newItem})! : controller.items.index(where: {$0 === newItem})!
+//      let position = controller.isFiltered ? controller.filteredItems.index(where: {$0 === newItem})! : controller.items.index(where: {$0 === newItem})!
         controller.tableView.reloadData()
         controller.searchBarTextDidEndEditing(controller.searchBar)
         navigationController?.popViewController(animated: true)
@@ -134,7 +133,6 @@ extension EditItemViewController : UIPickerViewDelegate, UIPickerViewDataSource 
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         self.selectedCategory = catList[row].catName!
-        print(selectedCategory)
         self.categoryTextField.text = selectedCategory
         return catList[row].catName
     }
