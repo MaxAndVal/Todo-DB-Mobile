@@ -104,10 +104,11 @@ class EditItemViewController: UIViewController {
 }
 
 extension EditItemViewController : UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate {
-    
+
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         selectedCategory = catList[row].catName!
     }
+
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         self.selectedCategory = catList[row].catName!
