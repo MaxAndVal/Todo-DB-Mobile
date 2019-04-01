@@ -35,7 +35,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="✔" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="svA-aQ-rid">
-                                                    <rect key="frame" x="15" y="0.0" width="25" height="29.5"/>
+                                                    <rect key="frame" x="15" y="60" width="25" height="29.5"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="25" id="8xc-Nv-Khv"/>
                                                     </constraints>
@@ -72,8 +72,8 @@
                                                 <constraint firstAttribute="trailingMargin" secondItem="Jps-Rz-Fj3" secondAttribute="trailing" constant="2" id="pa8-Cw-QPC"/>
                                                 <constraint firstItem="Jps-Rz-Fj3" firstAttribute="leading" secondItem="svA-aQ-rid" secondAttribute="trailing" constant="8" id="qtp-FK-1Uu"/>
                                                 <constraint firstItem="Jps-Rz-Fj3" firstAttribute="top" secondItem="9fO-Hb-eVy" secondAttribute="topMargin" id="r8E-Ww-YiV"/>
-                                                <constraint firstItem="svA-aQ-rid" firstAttribute="top" secondItem="9fO-Hb-eVy" secondAttribute="top" id="wGw-Od-L0x"/>
-                                                <constraint firstAttribute="bottom" secondItem="svA-aQ-rid" secondAttribute="bottom" constant="120" id="xqO-fU-4Nx"/>
+                                                <constraint firstItem="svA-aQ-rid" firstAttribute="top" secondItem="9fO-Hb-eVy" secondAttribute="top" constant="60" id="wGw-Od-L0x"/>
+                                                <constraint firstAttribute="bottom" secondItem="svA-aQ-rid" secondAttribute="bottom" constant="60" id="xqO-fU-4Nx"/>
                                                 <constraint firstItem="4aq-f3-Fmv" firstAttribute="top" secondItem="MPN-RB-HXw" secondAttribute="bottom" constant="20" id="zQQ-IS-9if"/>
                                             </constraints>
                                         </tableViewCellContentView>

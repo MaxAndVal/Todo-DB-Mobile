@@ -235,8 +235,11 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
         cell.cellTextField.text = task.title
         cell.checkmark.isHidden = !task.checkmark
         cell.summaryLabel.text = task.summary
-        cell.cellImage.image = UIImage(named: "imagePickerIcone.png")//UIImage(data: task.image ?? Data())
-
+        if let imageData: Data = try task.image {
+            cell.cellImage.image = UIImage(data: imageData)
+        } else {
+            cell.cellImage.image = UIImage(named: "imagePickerIcone.png")
+        }
         
         return cell
     }
