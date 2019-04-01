@@ -84,7 +84,7 @@ class ViewController: UIViewController {
         
         let addCat = UIAlertAction(title: "Ajouter une catégorie", style: .default) { (action) in
             let tf = alertController.textFields?[0]
-            var newTask = tf!.text!
+            let newTask = tf!.text!
             let newItem = Category(context: self.context)
             newItem.catName = newTask
             self.categories.append(newItem)
@@ -101,16 +101,28 @@ class ViewController: UIViewController {
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
         
-        alertController.addTextField { (textField) in
-            textField.placeholder = "titre ..."
-        }
-        
         alertController.addAction(addTask)
         alertController.addAction(addCat)
         alertController.addAction(cancelAction)
         present(alertController, animated: true)
+        addTask.isEnabled = false
+        addCat.isEnabled = false
         
+        alertController.addTextField { (textField) in
+            
+            NotificationCenter.default.addObserver(forName: UITextField.textDidChangeNotification, object: textField, queue: OperationQueue.main, using:
+                {_ in
+                    textField.placeholder = "titre ..."
+                    let textCount = textField.text?.count ?? 0
+                    let textIsNotEmpty = textCount > 0
+                    
+                    addTask.isEnabled = textIsNotEmpty
+                    addCat.isEnabled = textIsNotEmpty
+                    
+            })
+        }
     }
+    
     
     func saveItems() {
         do {
