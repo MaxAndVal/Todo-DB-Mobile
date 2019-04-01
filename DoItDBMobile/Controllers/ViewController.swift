@@ -124,14 +124,7 @@ class ViewController: UIViewController {
             let newItem = Category(context: self.context)
             newItem.catName = newTask
             self.categories.append(newItem)
-            //            if self.isFiltered
-            //            {
-            //                self.filteredItems.append(newItem)
-            //                self.tableView.insertRows(at: [IndexPath(item: self.filteredItems.count - 1, section: 0)], with: .automatic)
-            //            }else{
-            //                self.tableView.insertRows(at: [IndexPath(item: self.items.count - 1, section: 0)], with: .automatic)
-            //            }
-            
+            self.tableView.reloadData()
             self.saveItems()
         }
         
@@ -159,7 +152,7 @@ class ViewController: UIViewController {
         }
     }
     
-    
+    //MARK: - Save and Load Data
     func saveItems() {
         do {
             try self.context.save()
@@ -207,6 +200,7 @@ class ViewController: UIViewController {
     
 }
 
+//MARK: - Table view
 extension ViewController : UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -234,6 +228,12 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
         
         cell.cellTextField.text = task.title
         cell.checkmark.isHidden = !task.checkmark
+        cell.summaryLabel.text = task.summary
+        if let imageData: Data = try task.image {
+            cell.cellImage.image = UIImage(data: imageData)
+        } else {
+            cell.cellImage.image = UIImage(named: "imagePickerIcone.png")
+        }
         
         return cell
     }
@@ -273,6 +273,7 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
     }
 }
 
+//MARK : - SearchBar
 extension ViewController : UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -297,7 +298,6 @@ extension ViewController : UISearchBarDelegate {
             } catch let error as NSError {
                 print("Could not fetch : \(error)")
             }
-            
         }
     }
     
