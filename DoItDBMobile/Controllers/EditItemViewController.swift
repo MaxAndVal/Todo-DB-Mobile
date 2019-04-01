@@ -118,7 +118,7 @@ class EditItemViewController: UIViewController {
         newItem?.category = categoryTextField.text
         let data = icone.image?.jpegData(compressionQuality: 0.5)
         newItem?.setValue(data, forKey: "image")
-        let position = controller.isFiltered ? controller.filteredItems.index(where: {$0 === newItem})! : controller.items.index(where: {$0 === newItem})!
+//        let position = controller.isFiltered ? controller.filteredItems.index(where: {$0 === newItem})! : controller.items.index(where: {$0 === newItem})!
         controller.tableView.reloadData()
         controller.searchBarTextDidEndEditing(controller.searchBar)
         navigationController?.popViewController(animated: true)
