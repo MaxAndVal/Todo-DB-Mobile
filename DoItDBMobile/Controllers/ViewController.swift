@@ -94,7 +94,7 @@ class ViewController: UIViewController {
     //MARK:- Actions
     @IBAction func addItem(_ sender: UIBarButtonItem) {
         
-        let alertController = UIAlertController(title: "ToDo", message: "New Item ?", preferredStyle: .alert)
+        let alertController = UIAlertController(title: "ToDo", message: "New Item / Category", preferredStyle: .alert)
         
         let addTask = UIAlertAction(title: "Ajouter une tâche", style: .default) { (action) in
             let tf = alertController.textFields?[0]
@@ -133,7 +133,7 @@ class ViewController: UIViewController {
         alertController.addAction(addTask)
         alertController.addAction(addCat)
         alertController.addAction(cancelAction)
-        present(alertController, animated: true)
+        
         addTask.isEnabled = false
         addCat.isEnabled = false
         
@@ -150,6 +150,7 @@ class ViewController: UIViewController {
                     
             })
         }
+        present(alertController, animated: true)
     }
     
     //MARK: - Save and Load Data
