@@ -145,7 +145,7 @@ class ViewController: UIViewController {
         }
     }
     
-    
+    //MARK: - Save and Load Data
     func saveItems() {
         do {
             try self.context.save()
@@ -193,6 +193,7 @@ class ViewController: UIViewController {
     
 }
 
+//MARK: - Table view
 extension ViewController : UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -233,6 +234,9 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
         //if(task.category == titleF)
         cell.cellTextField.text = task.title
         cell.checkmark.isHidden = !task.checkmark
+        cell.summaryLabel.text = task.summary
+        cell.cellImage.image = UIImage(named: "imagePickerIcone.png")//UIImage(data: task.image ?? Data())
+
         
         return cell
     }
@@ -268,6 +272,7 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
     }
 }
 
+//MARK : - SearchBar
 extension ViewController : UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -291,9 +296,6 @@ extension ViewController : UISearchBarDelegate {
             } catch let error as NSError {
                 print("Could not fetch : \(error)")
             }
-            
-            //filteredItems = items.filter { $0.title!.lowercased().contains(searchBar.text!.lowercased()) }
-            
         }
     }
     
