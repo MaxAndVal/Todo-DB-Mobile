@@ -275,19 +275,49 @@ extension ViewController : UISearchBarDelegate {
             isFiltered = false
             tableView.reloadData()
         }else{
+            filteredItems = []
             isFiltered = true
-            filteredItems = items.filter { $0.title!.lowercased().contains(searchBar.text!.lowercased()) }
-            tableView.reloadData()
+            
+            let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
+            fetchRequest.predicate = NSPredicate(format: "title contains[c] %@", searchText)
+            do {
+                let fetchedResults = try self.context.fetch(fetchRequest)
+                let results = fetchedResults as [NSManagedObject]
+                
+                for item in results {
+                    self.filteredItems.append(item as! TodoItem)
+                }
+                self.tableView.reloadData()
+            } catch let error as NSError {
+                print("Could not fetch : \(error)")
+            }
+            
+            //filteredItems = items.filter { $0.title!.lowercased().contains(searchBar.text!.lowercased()) }
+            
         }
     }
+    
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         if(searchBar.text?.count==0){
             isFiltered = false
             tableView.reloadData()
         }else{
+            filteredItems = []
             isFiltered = true
-            filteredItems = items.filter { $0.title!.lowercased().contains(searchBar.text!.lowercased()) }
-            tableView.reloadData()
+            
+            let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
+            fetchRequest.predicate = NSPredicate(format: "title contains[c] %@", self.searchBar.text ?? "")
+            do {
+                let fetchedResults = try self.context.fetch(fetchRequest)
+                let results = fetchedResults as [NSManagedObject]
+                
+                for item in results {
+                    self.filteredItems.append(item as! TodoItem)
+                }
+                self.tableView.reloadData()
+            } catch let error as NSError {
+                print("Could not fetch : \(error)")
+            }
         }
     }
 }

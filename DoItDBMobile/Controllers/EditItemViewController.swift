@@ -13,23 +13,24 @@ class EditItemViewController: UIViewController {
     
     
     var newItem: TodoItem?
-    var catList = [Category]()
-    var selectedCategory = ""
-    let context = DataManager.SharedDataManager.context
-
+    private var catList = [Category]()
+    private var selectedCategory = ""
+    private let context = DataManager.SharedDataManager.context
+    private var categoryPicker = UIPickerView()
+    private var datePicker = UIDatePicker()
+    private let dateFormatter = DateFormatter()
 
     @IBOutlet weak var tf: UITextField!
-    private var categoryPicker = UIPickerView()
     @IBOutlet weak var categoryTextField: UITextField!
     @IBOutlet weak var tv_description: UITextView!
-    private var datePicker = UIDatePicker()
     @IBOutlet weak var icone: UIImageView!
     @IBOutlet weak var dateTextField: UITextField!
     
     override func viewWillAppear(_ animated: Bool) {
         loadItems()
-        categoryPicker.selectRow(1, inComponent: 0, animated: true)
+        
     }
+    
     func loadItems() {
         let fetchRequest: NSFetchRequest<Category> = NSFetchRequest<Category>(entityName: "Category")
         do {
@@ -48,8 +49,13 @@ class EditItemViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.dateFormatter.dateStyle = .medium
+        self.dateFormatter.timeStyle = .none
+        self.dateFormatter.locale = Locale(identifier: "fr_FR")
+        
         categoryPicker.dataSource = self
         categoryPicker.delegate = self
+        
         let gestureRecognizer = UITapGestureRecognizer()
         icone.isUserInteractionEnabled = true
         gestureRecognizer.addTarget(self, action: #selector(self.selectImage))
@@ -62,14 +68,20 @@ class EditItemViewController: UIViewController {
         datePicker.locale = Locale(identifier: "fr_FR")
         
         
-        if((newItem?.category?.isEmpty ?? false)){
+        if newItem?.category?.isEmpty ?? false {
             newItem?.category = "none"
+        }
+        
+        categoryTextField.text = newItem?.category
+        
+        if newItem?.date != nil {
+            dateTextField.text = self.dateFormatter.string(from: newItem!.date!)
         }
         
         if newItem?.image != nil {
             icone.image = UIImage(data: ((newItem?.image)!))
         } else {
-            icone.image = UIImage(named: "icon.png")
+            icone.image = UIImage(named: "imagePickerIcone.png")
         }
         categoryTextField.inputView = categoryPicker
         dateTextField.inputView = datePicker
@@ -79,13 +91,9 @@ class EditItemViewController: UIViewController {
     
     @objc
     func chooseDate() {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .medium
-        dateFormatter.timeStyle = .none
         let date: Date = datePicker.date
-        dateFormatter.locale = Locale(identifier: "fr_FR")
-        
-        self.dateTextField.text =  "\(dateFormatter.string(from: date))"
+        self.dateTextField.text =  "\(self.dateFormatter.string(from: date))"
+        print("here")
     }
     
     @objc func selectImage () {
@@ -106,9 +114,10 @@ class EditItemViewController: UIViewController {
         newItem?.title = tf.text!
         newItem?.summary = tv_description.text
         newItem?.date = datePicker.date
-        newItem?.category = selectedCategory
+        newItem?.category = categoryTextField.text
         let data = icone.image?.jpegData(compressionQuality: 0.5)
         newItem?.setValue(data, forKey: "image")
+//      let position = controller.isFiltered ? controller.filteredItems.index(where: {$0 === newItem})! : controller.items.index(where: {$0 === newItem})!
         controller.tableView.reloadData()
         controller.searchBarTextDidEndEditing(controller.searchBar)
         navigationController?.popViewController(animated: true)
