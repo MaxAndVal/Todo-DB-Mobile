@@ -16,6 +16,7 @@
 		9C381A0B221FEEE70061D139 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9C381A09221FEEE70061D139 /* LaunchScreen.storyboard */; };
 		9C381A18222039210061D139 /* CheckItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C381A17222039210061D139 /* CheckItemTableViewCell.swift */; };
 		9C381A1A222040D80061D139 /* EditItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C381A19222040D80061D139 /* EditItemViewController.swift */; };
+		9C3B119922525B8D00BA5D7E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9C3B119822525B8D00BA5D7E /* GoogleService-Info.plist */; };
 		9C69979F223F9DE4006B562A /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C69979E223F9DE4006B562A /* DataManager.swift */; };
 		9C86DCF9223F8D3B006952BA /* DoItDBMobile.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9C86DCF7223F8D3B006952BA /* DoItDBMobile.xcdatamodeld */; };
 /* End PBXBuildFile section */
@@ -32,6 +33,7 @@
 		9C381A0C221FEEE70061D139 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9C381A17222039210061D139 /* CheckItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckItemTableViewCell.swift; sourceTree = "<group>"; };
 		9C381A19222040D80061D139 /* EditItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditItemViewController.swift; sourceTree = "<group>"; };
+		9C3B119822525B8D00BA5D7E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		9C69979E223F9DE4006B562A /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		9C86DCF8223F8D3B006952BA /* DoItDBMobile.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DoItDBMobile.xcdatamodel; sourceTree = "<group>"; };
 		A5D191CEBF345841BCDEF03F /* Pods-DoItDBMobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DoItDBMobile.debug.xcconfig"; path = "Target Support Files/Pods-DoItDBMobile/Pods-DoItDBMobile.debug.xcconfig"; sourceTree = "<group>"; };
@@ -64,7 +66,6 @@
 				A5D191CEBF345841BCDEF03F /* Pods-DoItDBMobile.debug.xcconfig */,
 				1A43B191DF9A25D1AAB200A3 /* Pods-DoItDBMobile.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -90,13 +91,14 @@
 			isa = PBXGroup;
 			children = (
 				085D1330223FDD89005B5007 /* icon.png */,
-				9C69979D223F9DC5006B562A /* Data */,
 				9C381A00221FEEE40061D139 /* AppDelegate.swift */,
+				9C69979D223F9DC5006B562A /* Data */,
 				9C381A1422200FA20061D139 /* Controllers */,
 				9C381A1322200F9A0061D139 /* Views */,
 				9C381A1222200F8E0061D139 /* Model */,
 				9C381A07221FEEE70061D139 /* Assets.xcassets */,
 				9C381A0C221FEEE70061D139 /* Info.plist */,
+				9C3B119822525B8D00BA5D7E /* GoogleService-Info.plist */,
 			);
 			path = DoItDBMobile;
 			sourceTree = "<group>";
@@ -198,6 +200,7 @@
 			files = (
 				085D1331223FDD89005B5007 /* icon.png in Resources */,
 				9C381A0B221FEEE70061D139 /* LaunchScreen.storyboard in Resources */,
+				9C3B119922525B8D00BA5D7E /* GoogleService-Info.plist in Resources */,
 				9C381A08221FEEE70061D139 /* Assets.xcassets in Resources */,
 				9C381A06221FEEE50061D139 /* Main.storyboard in Resources */,
 			);
@@ -215,15 +218,21 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-DoItDBMobile/Pods-DoItDBMobile-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${BUILT_PRODUCTS_DIR}/IQKeyboardManagerSwift/IQKeyboardManagerSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
+				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 			);
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IQKeyboardManagerSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

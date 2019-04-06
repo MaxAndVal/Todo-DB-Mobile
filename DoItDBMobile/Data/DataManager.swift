@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+//import Firebase
 
 
 
@@ -22,9 +23,12 @@ class DataManager {
         }
     }
     
+    //var ref: DatabaseReference!
+    
+    
     
     private init() {
-        
+        //ref = Database.database().reference()
     }
     
     // MARK: - Core Data stack
