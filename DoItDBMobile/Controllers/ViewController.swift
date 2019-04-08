@@ -18,7 +18,9 @@ class ViewController: UIViewController {
     let context = DataManager.SharedDataManager.context
     var filteredItems = [TodoItem]()
     var isFiltered = false
+    var listToDisplay = [TodoItem]()
     var categories = [Category]()
+    var sortedBy = SortedBy.categorie
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,6 +36,7 @@ class ViewController: UIViewController {
         super.init(coder : aDecoder)
         loadItems()
     }
+    
     
     //MARK:- prepare
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -74,6 +77,19 @@ class ViewController: UIViewController {
         } catch let error as NSError {
             print("Could not fetch : \(error)")
         }
+        
+        switch sortedBy {
+        case .alphabetique:
+            listToDisplaySorted(type : .alphabetique)
+            tableView.reloadData()
+        case .date:
+            print("2")
+            listToDisplaySorted(type : .date)
+            tableView.reloadData()
+        default:
+            listToDisplaySorted(type : .categorie)
+            tableView.reloadData()
+        }
         return tempTable
     }
     
@@ -89,6 +105,22 @@ class ViewController: UIViewController {
         } catch let error as NSError {
             print("error : \(error)")
         }
+    }
+    
+    func listToDisplaySorted(type : SortedBy){
+        switch type {
+        case .alphabetique:
+             sortedBy = .alphabetique
+            self.listToDisplay = self.isFiltered ? filteredItems.sorted { $0.title!.lowercased() < $1.title!.lowercased() } :  items.sorted { $0.title!.lowercased() < $1.title!.lowercased() }
+        case .date:
+             sortedBy = .date
+            //self.listToDisplay = self.isFiltered ? filteredItems.sorted { $0.date < $1.date } :  items.sorted { $0.date < $1.date }
+            print("pouet")
+        default:
+             sortedBy = .categorie
+            self.listToDisplay = items
+        }
+        
     }
     
     //MARK:- Actions
@@ -205,7 +237,16 @@ class ViewController: UIViewController {
 extension ViewController : UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        let title = categories[section].catName
+        let title : String
+        switch sortedBy {
+        case .alphabetique:
+            title = "A-z"
+        case .date:
+            title = "Date"
+        default:
+            title = categories[section].catName ?? ""
+        }
+        
         return isFiltered ? "Resultat de la recherche : " : title
     }
     
@@ -216,12 +257,16 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return isFiltered ? 1 : categories.count
+        return isFiltered || sortedBy != .categorie ? 1 : categories.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        var tempTable = tempTableByCat(category: categories[indexPath.section].catName!)
+        var tempTable = [TodoItem]()
+        if(sortedBy == .categorie){
+            tempTable = tempTableByCat(category: categories[indexPath.section].catName!)
+        }else{
+            tempTable = listToDisplay
+        }
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cellidentifier") as! CheckItemTableViewCell
         
@@ -277,6 +322,21 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
 //MARK : - SearchBar
 extension ViewController : UISearchBarDelegate {
     
+    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+        switch selectedScope {
+        case 1:
+            listToDisplaySorted(type : .alphabetique)
+            tableView.reloadData()
+        case 2:
+            print("2")
+            listToDisplaySorted(type : .date)
+            tableView.reloadData()
+        default:
+            listToDisplaySorted(type : .categorie)
+            tableView.reloadData()
+        }
+    }
+    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if(searchBar.text?.count==0){
             isFiltered = false
@@ -284,8 +344,6 @@ extension ViewController : UISearchBarDelegate {
         }else{
             filteredItems = []
             isFiltered = true
-            print("test", items)
-            
             let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
             fetchRequest.predicate = NSPredicate(format: "title contains[c] %@", searchText)
             do {
@@ -301,6 +359,7 @@ extension ViewController : UISearchBarDelegate {
             }
         }
     }
+    
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         print("searchBarTextDidEndEditing")
