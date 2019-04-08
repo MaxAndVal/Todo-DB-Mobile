@@ -8,11 +8,11 @@
 
 import UIKit
 import CoreData
-
-
+import Firebase
 
 class DataManager {
     
+    var ref: DatabaseReference!
     static let SharedDataManager = DataManager()
     
     var context: NSManagedObjectContext {
@@ -24,7 +24,8 @@ class DataManager {
     
     
     private init() {
-        
+        FirebaseApp.configure()
+        ref = Database.database().reference()
     }
     
     // MARK: - Core Data stack
@@ -76,5 +77,31 @@ class DataManager {
         saveContext()
     }
 
+    func saveFireBase() {
+        let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
+        do {
+            let fetchedResults = try self.context.fetch(fetchRequest)
+            let results = fetchedResults as [NSManagedObject]
+            var i = 0
+            for item in results {
+                
+                var keys = Array(item.entity.attributesByName.keys)
+                //keys.remove(at: 1)
+                var tab : [String:String] = [:]
+                
+                print("item \(i) : ",item)
+                for key in keys {
+                    tab.updateValue(item.primitiveValue(forKey: key) as? String ?? "", forKey: key)
+                    print("tab : ",tab)
+                }
+                self.ref.child("Users").child("Task_\(i)").setValue(tab)
+                i += 1
+
+            }
+            
+        } catch let error as NSError {
+            print("Could not fetch : \(error)")
+        }
+    }
     
 }
