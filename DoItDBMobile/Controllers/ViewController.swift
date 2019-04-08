@@ -15,6 +15,7 @@ class ViewController: UIViewController {
     var navigationBar: UINavigationBar!
     var items = [TodoItem]()
     let context = DataManager.SharedDataManager.context
+    let dataManager = DataManager.SharedDataManager
     var filteredItems = [TodoItem]()
     var isFiltered = false
     var categories = [Category]()
@@ -115,6 +116,7 @@ class ViewController: UIViewController {
             }
             self.tableView.reloadData()
             self.saveItems()
+            self.dataManager.saveFireBase()
         }
         
         let addCat = UIAlertAction(title: "Ajouter une catégorie", style: .default) { (action) in
@@ -229,7 +231,8 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
         cell.checkmark.isHidden = !task.checkmark
         cell.summaryLabel.text = task.summary
         if let imageData: Data = try task.image {
-            cell.cellImage.image = UIImage(data: imageData)
+            let realImage = Data(base64Encoded: imageData)!
+            cell.cellImage.image = UIImage(data: realImage)
         } else {
             cell.cellImage.image = UIImage(named: "imagePickerIcone.png")
         }

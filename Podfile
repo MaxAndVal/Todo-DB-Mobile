@@ -9,7 +9,7 @@ target 'DoItDBMobile' do
   pod 'IQKeyboardManagerSwift', '~> 6.0.0'
   pod 'Firebase/Core'
   pod 'Firebase/Database'
-
+  pod 'FirebaseUI'
 
 
   # Pods for DoItDBMobile

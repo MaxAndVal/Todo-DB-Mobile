@@ -82,9 +82,9 @@ class EditItemViewController: UIViewController, UINavigationControllerDelegate {
                 newItem?.category = "none"
             }
             categoryTextField.text = realNewItem.category
-            if let realDate: Date = realNewItem.date {
-                dateTextField.text = self.dateFormatter.string(from: realDate)
-                datePicker.date = realDate
+            if let realDate: String = realNewItem.date {
+                dateTextField.text = self.dateFormatter.string(for: realDate)//self.dateFormatter.string(from: realDate)
+                datePicker.date = self.dateFormatter.date(from: realDate) ?? Date()
             } else {
                 datePicker.date = Date()
             }
@@ -136,10 +136,11 @@ class EditItemViewController: UIViewController, UINavigationControllerDelegate {
         let controller = navigationController?.viewControllers[0] as! ViewController
         newItem?.title = tf.text!
         newItem?.summary = tv_description.text
-        newItem?.date = datePicker.date
+        newItem?.date = datePicker.date.description
         newItem?.category = categoryTextField.text
         let data = icone.image?.jpegData(compressionQuality: 0.5)
-        newItem?.setValue(data, forKey: "image")
+        let realData = data?.base64EncodedData()
+        newItem?.setValue(realData, forKey: "image")
         
         delegate.didFinishEditItem(controller: controller, item: newItem!)
     }
