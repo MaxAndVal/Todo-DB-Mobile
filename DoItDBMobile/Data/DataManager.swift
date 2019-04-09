@@ -10,6 +10,7 @@ import UIKit
 import CoreData
 import Firebase
 
+
 class DataManager {
     
     var ref: DatabaseReference!
