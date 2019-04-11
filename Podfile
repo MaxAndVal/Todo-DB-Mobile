@@ -11,6 +11,7 @@ target 'DoItDBMobile' do
   pod 'Firebase/Database'
   pod 'FirebaseUI'
   pod 'Firebase/Storage'
+  pod 'Firebase'
 
 
   # Pods for DoItDBMobile

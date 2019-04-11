@@ -20,7 +20,12 @@ class ViewController: UIViewController {
     var filteredItems = [TodoItem]()
     var isFiltered = false
     var categories = [Category]()
+
     var ref = Database.database().reference()
+    var sortedBy = SortedBy.categorie
+    let orderByAZ = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Other"]
+    let alphabeticArray = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+    
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
@@ -33,6 +38,7 @@ class ViewController: UIViewController {
     //MARK : - ViewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
+        listToDisplaySorted()
         searchBar.delegate = self
         if(self.categories.count == 0) {
             let initCat = Category(context: context)
@@ -63,36 +69,37 @@ class ViewController: UIViewController {
         loadFromFirebase()
     }
     
+    
     //MARK:- prepare for segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let indexPath = (tableView.indexPath(for: sender as! UITableViewCell))!
         if segue.identifier == "editItem"
         {
             let destVC = segue.destination as! EditItemViewController
             var itemToUpdate: TodoItem
             
             if(isFiltered){
-                itemToUpdate = items.filter{$0 === filteredItems[(tableView.indexPath(for: sender as! UITableViewCell)?.row)!]}[0]
+                itemToUpdate = items.filter{$0 === filteredItems[indexPath.row]}[0]
             } else {
-                let section = (tableView.indexPath(for: sender as! UITableViewCell)?.section)!
-                var tempTable = tempTableByCat(category: categories[section].catName!)
-                
-                itemToUpdate = tempTable[(tableView.indexPath(for: sender as! UITableViewCell)?.row)!]
+                var tempTable = [TodoItem]()
+                switch sortedBy {
+                case .alphabetique:
+                    if(orderByAZ[indexPath.section] == "Other"){
+                        tempTable = items.filter{!alphabeticArray.contains(($0.title?.first?.uppercased())!)}
+                    }else{
+                        tempTable = items.filter{$0.title?.first?.uppercased() == orderByAZ[indexPath.section]}
+                    }
+                case .date:
+                    tempTable = items.filter{$0.category == categories[indexPath.section].catName}
+                default:
+                    tempTable = items.filter{$0.category == categories[indexPath.section].catName}
+                }
+                let index = items.firstIndex{$0 == tempTable[indexPath.row]}
+                itemToUpdate = items[index!]
             }
             destVC.newItem = itemToUpdate
             destVC.delegate = self
         }
-    }
-    
-    
-    //MARK : - TempTable by Category
-    func tempTableByCat(category : String = "none") -> [TodoItem] {
-        let tempTable = [TodoItem]()
-        
-        let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
-        fetchRequest.predicate = NSPredicate(format: "category contains[c] %@", category)
-        
-        return loadGenericTodoItems(list: tempTable, request: fetchRequest)
-
     }
     
     func deleteRowByTitle(title: String?, index: Int){
@@ -107,6 +114,18 @@ class ViewController: UIViewController {
         } catch let error as NSError {
             print("error : \(error)")
         }
+    }
+    
+    func listToDisplaySorted(){
+        switch self.sortedBy {
+        case .alphabetique:
+            items = items.sorted { $0.title!.lowercased() < $1.title!.lowercased() }
+        case .date:
+            print("pouet")
+        default:
+            categories = categories.sorted{$0.catName!.lowercased() < $1.catName!.lowercased()}
+        }
+        self.tableView.reloadData()
     }
     
     //MARK:- Actions
@@ -124,12 +143,10 @@ class ViewController: UIViewController {
             newItem.title = newItemTitle
             newItem.category = "none"
             self.items.append(newItem)
-            let tempTable = self.tempTableByCat(category: "none")
+            //let tempTable = self.tempTableByCat(category: "none")
             if self.isFiltered {
                 self.filteredItems.append(newItem)
                 self.tableView.insertRows(at: [IndexPath(item: self.filteredItems.count - 1, section: 0)], with: .automatic)
-            } else {
-                self.tableView.insertRows(at: [IndexPath(item: tempTable.count - 1, section: 0)], with: .automatic)
             }
             self.tableView.reloadData()
             self.saveItems()
@@ -191,7 +208,7 @@ class ViewController: UIViewController {
     func loadItems() {
         let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
         items = loadGenericTodoItems(list: items, request: fetchRequest)
-
+        
         let fetchRequestCat: NSFetchRequest<Category> = NSFetchRequest<Category>(entityName: "Category")
         categories = loadGenericCategoryItems(list: categories, request: fetchRequestCat)
     }
@@ -233,23 +250,76 @@ class ViewController: UIViewController {
 extension ViewController : UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        let title = categories[section].catName
+        let title : String
+        switch sortedBy {
+        case .alphabetique:
+            title = orderByAZ[section]
+        case .date:
+            title = "Date"
+        default:
+            title = categories[section].catName ?? ""
+        }
         return isFiltered ? "Resultat de la recherche : " : title
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let tempTable = tempTableByCat(category: categories[section].catName!)
-        return isFiltered ? filteredItems.count : tempTable.count
+        
+        let numberOfRowsInSection : Int;
+        var tempTable = [TodoItem]()
+        
+        switch sortedBy {
+        case .alphabetique:
+            if(orderByAZ[section] == "Other"){
+                tempTable = items.filter{!alphabeticArray.contains(($0.title?.first?.uppercased())!)}
+            }else{
+                tempTable = items.filter{$0.title?.first?.uppercased() == orderByAZ[section]}
+            }
+            numberOfRowsInSection = tempTable.count
+            
+        case .date:
+            numberOfRowsInSection = items.count
+        default:
+            let cat = categories[section].catName!
+            var tempTable = [TodoItem]()
+            let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
+            fetchRequest.predicate = NSPredicate(format: "category contains[c] %@", cat)
+            tempTable = loadGenericTodoItems(list: tempTable, request: fetchRequest)
+            numberOfRowsInSection = tempTable.count
+        }
+        return isFiltered ? filteredItems.count : numberOfRowsInSection
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return isFiltered ? 1 : categories.count
+        let numberOfSection : Int;
+        switch sortedBy {
+        case .alphabetique:
+            numberOfSection = orderByAZ.count
+        case .date:
+            numberOfSection = 1
+        default:
+            numberOfSection = categories.count
+        }
+        return isFiltered ? 1 : numberOfSection
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        var tempTable = tempTableByCat(category: categories[indexPath.section].catName!)
+        var tempTable = [TodoItem]()
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cellidentifier") as! CheckItemTableViewCell
+        
+        switch sortedBy {
+        case .alphabetique:
+            if(orderByAZ[indexPath.section] == "Other"){
+                tempTable = items.filter{!alphabeticArray.contains(($0.title?.first?.uppercased())!)}
+            }else{
+                tempTable = items.filter{$0.title?.first?.uppercased() == orderByAZ[indexPath.section]}
+            }
+        case .date:
+            tempTable = items
+        default:
+            tempTable = items.filter{$0.category == categories[indexPath.section].catName};
+        }
+        //tempTable = self.sortedBy == .categorie ? items.filter{$0.category == categories[indexPath.section].catName} : items
+        
         let task = isFiltered ? filteredItems[indexPath.row] : tempTable[indexPath.row]
         
         cell.cellTextField.text = task.title
@@ -270,8 +340,21 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
         if(isFiltered) {
             filteredItems[indexPath.row].checkmark = !filteredItems[indexPath.row].checkmark
         } else {
-            var tempTable = tempTableByCat(category: categories[indexPath.section].catName!)
-            tempTable[indexPath.row].checkmark = !tempTable[indexPath.row].checkmark
+            var tempTable = [TodoItem]()
+            switch sortedBy {
+            case .alphabetique:
+                if(orderByAZ[indexPath.section] == "Other"){
+                    tempTable = items.filter{!alphabeticArray.contains(($0.title?.first?.uppercased())!)}
+                }else{
+                    tempTable = items.filter{$0.title?.first?.uppercased() == orderByAZ[indexPath.section]}
+                }
+            case .date:
+                tempTable = items.filter{$0.category == categories[indexPath.section].catName}
+            default:
+                tempTable = items.filter{$0.category == categories[indexPath.section].catName}
+            }
+            let index = items.firstIndex{$0 == tempTable[indexPath.item]}!
+            items[index].checkmark = !items[index].checkmark
         }
         tableView.deselectRow(at: indexPath, animated: true)
         tableView.reloadData()
@@ -280,18 +363,34 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        
+        let index : Int;
         if (editingStyle == .delete) {
             if isFiltered
             {
-                let index = items.firstIndex{$0 == filteredItems[indexPath.item]}
+                index = items.firstIndex{$0 == filteredItems[indexPath.item]}!
                 filteredItems.remove(at: indexPath.row)
-                deleteRowByTitle(title: items[index!].title, index: index!)
             } else {
-                var tempTable = tempTableByCat(category: categories[indexPath.section].catName!)
-                let index = items.firstIndex{$0 == tempTable[indexPath.row]} ?? -1
-                deleteRowByTitle(title: items[index].title, index : index)
+                var tempTable = [TodoItem]()
+                switch sortedBy {
+                case .alphabetique:
+                    if(orderByAZ[indexPath.section] == "Other"){
+                        tempTable = items.filter{!alphabeticArray.contains(($0.title?.first?.uppercased())!)}
+                    }else{
+                        tempTable = items.filter{$0.title?.first?.uppercased() == orderByAZ[indexPath.section]}
+                    }
+                case .date:
+                    tempTable = items.filter{$0.category == categories[indexPath.section].catName}
+                default:
+                    //                    let cat = categories[indexPath.section].catName!
+                    //                    let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
+                    //                    fetchRequest.predicate = NSPredicate(format: "category contains[c] %@", cat)
+                    tempTable = items.filter{$0.category == categories[indexPath.section].catName}
+                }
+                index = items.firstIndex{$0 == tempTable[indexPath.row]}!
+                
+                //tempTable = loadGenericTodoItems(list: tempTable, request: fetchRequest)
             }
+            deleteRowByTitle(title: items[index].title, index: index)
             tableView.deleteRows(at: [indexPath], with: .automatic)
             tableView.reloadData()
             saveItems()
@@ -303,6 +402,19 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
 //MARK : - SearchBar
 extension ViewController : UISearchBarDelegate {
     
+    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+        switch selectedScope {
+        case 1:
+            sortedBy = .alphabetique
+        case 2:
+            print("2")
+            sortedBy = .date
+        default:
+            sortedBy = .categorie
+        }
+        listToDisplaySorted()
+    }
+    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if (searchBar.text?.count==0) {
             isFiltered = false
@@ -310,8 +422,6 @@ extension ViewController : UISearchBarDelegate {
         } else {
             filteredItems = []
             isFiltered = true
-            print("test", items)
-            
             let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
             fetchRequest.predicate = NSPredicate(format: "title contains[c] %@", searchText)
             self.filteredItems = loadGenericTodoItems(list: self.filteredItems, request: fetchRequest)
@@ -319,8 +429,8 @@ extension ViewController : UISearchBarDelegate {
         }
     }
     
+    
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        print("searchBarTextDidEndEditing")
         if (searchBar.text?.count==0) {
             isFiltered = false
             tableView.reloadData()
