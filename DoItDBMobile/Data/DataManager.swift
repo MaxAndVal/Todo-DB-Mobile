@@ -124,33 +124,29 @@ class DataManager {
             return
         }
         self.ref.child("users").child(user.uid).child("userData").child("TodoItems").observe(.value, with: { (snapshot) in
-            print("snapshot : ", snapshot.value)
-            let dico = snapshot.value as! NSDictionary
-            print("DICHOTOMY : ",dico)
-//            for item in snapshot.children {
-//                print("ITEM : ",item)
-//                print(dico["\(item)"])
-//                print("TEST : ", (snapshot.value as! NSDictionary)[item] )
-//                //print("TEST 2 : ", snapshot.childSnapshot(forPath: String(item)).value)
-//
-//
-//                let id = snapshot.childSnapshot(forPath: String(item)).childSnapshot(forPath: "id").value as? String
-//                let category = snapshot.childSnapshot(forPath: String(item)).childSnapshot(forPath: "category").value as? String
-//                let checkmark = snapshot.childSnapshot(forPath: String(item)).childSnapshot(forPath: "checkmark").value as? Bool
-//                let date = snapshot.childSnapshot(forPath: String(item)).childSnapshot(forPath: "date").value as? String
-//                let summary = snapshot.childSnapshot(forPath: String(item)).childSnapshot(forPath: "summary").value as? String
-//                let title = snapshot.childSnapshot(forPath: String(item)).childSnapshot(forPath: "title").value as? String
-//
-//                print("ID !!!! ", id)
-//
-//                if let potentiallyItem = self.getId(id: id) {
-//                    print("Load existing Item : ",potentiallyItem)
-//                } else {
-//                    let newItem = TodoItem.newTodoItem(context: self.context, title: title, category: category, checkmark: checkmark ?? false, date: date, image: nil, summary: summary)
-//                    print("New Item fetch from FireBase", newItem)
-//                }
-//            }
             
+            for item in snapshot.children {
+                                
+                if let itemGuard = (item as? DataSnapshot)?.value as? NSMutableDictionary {
+                    let id = itemGuard.value(forKey: "id") as? String
+                    let category = itemGuard.value(forKey: "category") as? String
+                    let date = itemGuard.value(forKey: "date") as? String
+                    let summary = itemGuard.value(forKey: "summary") as? String
+                    let title = itemGuard.value(forKey: "title") as? String
+                    let checkmark = itemGuard.value(forKey: "checkmark") as? Bool
+                    
+                    if let potentiallyItem : TodoItem = self.getId(id: id) {
+                        print("Load existing Item : ",potentiallyItem)
+                    }
+                    else {
+                        ///////////////////////////////
+                        let newItem = TodoItem.newTodoItem(context: self.context, id: id, title: title, category: category, checkmark: checkmark ?? false, date: date, image: nil, summary: summary)
+                        //newItem.id = id
+                        print("New Item fetch from FireBase", newItem)
+                    }
+                }
+            }
+            self.saveData()
         }, withCancel: nil)
     }
     
@@ -160,22 +156,19 @@ class DataManager {
             return todoItem
         }
         let categoryRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
-        categoryRequest.predicate = NSPredicate(format: "id contains[c] %@", certifiedId)
+        categoryRequest.predicate = NSPredicate(format: "id = %@", certifiedId)
         do {
             let fetchedResults = try self.context.fetch(categoryRequest)
             let results = fetchedResults as [NSManagedObject]
-            
-            guard let user = Auth.auth().currentUser else {
-                return todoItem
-            }
-            
-            for item in results {
-                //let updatedCat = (item as! TodoItem).toSerialized()
-                self.ref.child("users").child(user.uid).child("userData").child("TodoItems").child((item as! TodoItem).id!).observeSingleEvent(of: .value) { (snapshot) in
-                    todoItem = snapshot.value as? TodoItem ?? nil
+            if results.count > 0 {
+                let updatedTodo = (results[0] as! TodoItem).toSerialized()
+                if updatedTodo["id"] as? String == id {
+                    todoItem = results[0] as? TodoItem
                 }
             }
-            print("TodoItem Load from FireBase")
+            
+            print("TodoItem Load from FireBase", todoItem)
+            
         } catch let error as NSError {
             print("Could not fetch : \(error)")
         }
@@ -199,10 +192,16 @@ extension Category {
 
 extension TodoItem {
     
-    static func newTodoItem(context : NSManagedObjectContext ,title: String?, category: String?, checkmark: Bool , date: String?, image: Data?, summary: String?) -> TodoItem {
-        let id = NSUUID().uuidString
+    static func newTodoItem(context : NSManagedObjectContext, id: String? ,title: String?, category: String?, checkmark: Bool , date: String?, image: Data?, summary: String?) -> TodoItem {
+        let safeId : String?
+        if id == nil {
+            safeId = NSUUID().uuidString
+        } else {
+            safeId = id
+        }
+        //let id = NSUUID().uuidString
         let NewTodoItem = TodoItem(context: context)
-        NewTodoItem.id = id
+        NewTodoItem.id = safeId
         NewTodoItem.category = category
         NewTodoItem.checkmark = checkmark
         NewTodoItem.date = date

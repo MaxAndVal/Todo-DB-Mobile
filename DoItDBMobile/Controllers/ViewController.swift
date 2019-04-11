@@ -26,7 +26,7 @@ class ViewController: UIViewController {
     let orderByAZ = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Other"]
     let alphabeticArray = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
     
-    
+
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     
@@ -46,7 +46,6 @@ class ViewController: UIViewController {
             saveItems()
         }
         //dataManager.loadCatFromFireBase()
-        //dataManager.loadTodoItemsFromFireBase()
         
     }
     
@@ -65,6 +64,7 @@ class ViewController: UIViewController {
     //MARK : - Init()
     required init?(coder aDecoder: NSCoder) {
         super.init(coder : aDecoder)
+        dataManager.loadTodoItemsFromFireBase()
         loadItems()
         //loadFromFirebase()
     }
@@ -108,7 +108,7 @@ class ViewController: UIViewController {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd MMM yy"
         dateFormatter.timeZone = TimeZone.autoupdatingCurrent
-        
+        self.loadItems()
         switch self.sortedBy {
         case .alphabetique:
             items = items.sorted { $0.title!.lowercased() < $1.title!.lowercased() }
@@ -130,7 +130,7 @@ class ViewController: UIViewController {
             
             let newItemTitle = tf!.text!
             
-            let newItem = TodoItem.newTodoItem(context: self.context, title: newItemTitle, category: "none", checkmark: false, date: nil, image: nil, summary: nil)
+            let newItem = TodoItem.newTodoItem(context: self.context, id: nil, title: newItemTitle, category: "none", checkmark: false, date: nil, image: nil, summary: nil)
             self.items.append(newItem)
             //let tempTable = self.tempTableByCat(category: "none")
             if self.isFiltered {
@@ -195,9 +195,11 @@ class ViewController: UIViewController {
     
     func loadItems() {
         let fetchRequestCat: NSFetchRequest<Category> = NSFetchRequest<Category>(entityName: "Category")
+        categories.removeAll(keepingCapacity: false)
         categories = loadGenericCategoryItems(list: categories, request: fetchRequestCat)
         
         let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
+        items.removeAll(keepingCapacity: false)
         items = loadGenericTodoItems(list: items, request: fetchRequest)
     }
     
@@ -209,6 +211,7 @@ class ViewController: UIViewController {
             let results = fetchedResults as [NSManagedObject]
             
             for item in results {
+                print("item load: ", item)
                 resultList.append(item as! TodoItem)
             }
         } catch let error as NSError {
@@ -339,7 +342,6 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
             tableView.deleteRows(at: [indexPath], with: .automatic)
             tableView.reloadData()
             saveItems()
-            self.dataManager.saveFireBase()
         }
     }
 }
