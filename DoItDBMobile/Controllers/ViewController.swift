@@ -32,6 +32,7 @@ class ViewController: UIViewController {
     //MARK : - ViewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
+        listToDisplaySorted()
         searchBar.delegate = self
         if(self.categories.count == 0) {
             let initCat = Category(context: context)
