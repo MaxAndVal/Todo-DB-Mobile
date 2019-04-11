@@ -109,11 +109,15 @@ class ViewController: UIViewController {
         dateFormatter.dateFormat = "dd MMM yy"
         dateFormatter.timeZone = TimeZone.autoupdatingCurrent
         self.loadItems()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .none
+        dateFormatter.locale = Locale(identifier: "fr_FR")
+        
         switch self.sortedBy {
         case .alphabetique:
             items = items.sorted { $0.title!.lowercased() < $1.title!.lowercased() }
         case .date:
-            items = items.sorted{dateFormatter.date(from: $0.date ?? "01 Jan 2099") as Date! < dateFormatter.date(from: $1.date ?? "01 Jan 2099") as Date!}
+            items = items.sorted{dateFormatter.date(from: $0.date ?? "01 Janv. 2099") as Date! < dateFormatter.date(from: $1.date ?? "01 Janv. 2099") as Date!}
         default:
             categories = categories.sorted{$0.catName!.lowercased() < $1.catName!.lowercased()}
         }
@@ -370,7 +374,7 @@ extension ViewController : UISearchBarDelegate {
             filteredItems = []
             isFiltered = true
             let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
-            fetchRequest.predicate = NSPredicate(format: "title contains[c] %@", searchText)
+            fetchRequest.predicate = NSPredicate(format: "title contains[cd] %@", searchText)
             self.filteredItems = loadGenericTodoItems(list: self.filteredItems, request: fetchRequest)
             self.tableView.reloadData()
         }
