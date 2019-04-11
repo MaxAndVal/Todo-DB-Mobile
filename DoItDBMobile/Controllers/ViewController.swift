@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import Firebase
 
 class ViewController: UIViewController {
     
@@ -19,6 +20,7 @@ class ViewController: UIViewController {
     var filteredItems = [TodoItem]()
     var isFiltered = false
     var categories = [Category]()
+    var ref = Database.database().reference()
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
@@ -38,12 +40,27 @@ class ViewController: UIViewController {
             self.categories.append(initCat)
             saveItems()
         }
+        dataManager.loadCatFromFireBase()
+        dataManager.loadTodoItemsFromFireBase()
+    }
+    
+    
+    @IBAction func logout() {
+        do {
+            try Auth.auth().signOut()
+            
+        } catch let error {
+            print(error)
+        }
+        self.dismiss(animated: true, completion: nil)
+        
     }
     
     //MARK : - Init()
     required init?(coder aDecoder: NSCoder) {
         super.init(coder : aDecoder)
-        loadItems()
+        //loadItems()
+        loadFromFirebase()
     }
     
     //MARK:- prepare for segue
@@ -127,6 +144,7 @@ class ViewController: UIViewController {
             self.categories.append(newItem)
             self.tableView.reloadData()
             self.saveItems()
+            self.dataManager.saveFireBase()
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
@@ -155,6 +173,13 @@ class ViewController: UIViewController {
     }
     
     //MARK: - Save and Load Data
+    func loadFromFirebase() {
+        let ref = Database.database().reference()
+        let user = Auth.auth().currentUser
+        print(ref.child("users").child(user!.uid).child("userData").child("TodoItems"))
+    }
+    
+    
     func saveItems() {
         do {
             try self.context.save()
@@ -251,6 +276,7 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
         tableView.deselectRow(at: indexPath, animated: true)
         tableView.reloadData()
         saveItems()
+        self.dataManager.saveFireBase()
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
@@ -269,6 +295,7 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
             tableView.deleteRows(at: [indexPath], with: .automatic)
             tableView.reloadData()
             saveItems()
+            self.dataManager.saveFireBase()
         }
     }
 }
