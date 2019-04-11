@@ -85,19 +85,7 @@ class ViewController: UIViewController {
             if(isFiltered){
                 itemToUpdate = items.filter{$0 === filteredItems[indexPath.row]}[0]
             } else {
-                var tempTable = [TodoItem]()
-                switch sortedBy {
-                case .alphabetique:
-                    if(orderByAZ[indexPath.section] == "Other"){
-                        tempTable = items.filter{!alphabeticArray.contains(($0.title?.first?.uppercased())!)}
-                    }else{
-                        tempTable = items.filter{$0.title?.first?.uppercased() == orderByAZ[indexPath.section]}
-                    }
-                case .date:
-                    tempTable = items.filter{$0.category == categories[indexPath.section].catName}
-                default:
-                    tempTable = items.filter{$0.category == categories[indexPath.section].catName}
-                }
+                var tempTable = tempTableOrder(pathSection: indexPath.section)
                 let index = items.firstIndex{$0 == tempTable[indexPath.row]}
                 itemToUpdate = items[index!]
             }
@@ -121,11 +109,15 @@ class ViewController: UIViewController {
     }
     
     func listToDisplaySorted(){
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd MMM yy"
+        dateFormatter.timeZone = TimeZone.autoupdatingCurrent
+        
         switch self.sortedBy {
         case .alphabetique:
             items = items.sorted { $0.title!.lowercased() < $1.title!.lowercased() }
         case .date:
-            print("pouet")
+            items = items.sorted{dateFormatter.date(from: $0.date ?? "01 Jan 2099") as Date! < dateFormatter.date(from: $1.date ?? "01 Jan 2099") as Date!}
         default:
             categories = categories.sorted{$0.catName!.lowercased() < $1.catName!.lowercased()}
         }
@@ -244,6 +236,24 @@ class ViewController: UIViewController {
         return resultList
     }
     
+    func tempTableOrder(pathSection : Int) -> [TodoItem]{
+        var tempTable = [TodoItem]()
+        switch sortedBy {
+        case .alphabetique:
+            if(orderByAZ[pathSection] == "Other"){
+                tempTable = items.filter{!alphabeticArray.contains(($0.title?.first?.uppercased())!)}
+            }else{
+                tempTable = items.filter{$0.title?.first?.uppercased() == orderByAZ[pathSection]}
+            }
+        case .date:
+            tempTable = items
+        default:
+            tempTable = items.filter{$0.category == categories[pathSection].catName};
+        }
+        return tempTable
+    }
+
+    
 }
 
 //MARK: - Table view
@@ -263,30 +273,8 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        let numberOfRowsInSection : Int;
-        var tempTable = [TodoItem]()
-        
-        switch sortedBy {
-        case .alphabetique:
-            if(orderByAZ[section] == "Other"){
-                tempTable = items.filter{!alphabeticArray.contains(($0.title?.first?.uppercased())!)}
-            }else{
-                tempTable = items.filter{$0.title?.first?.uppercased() == orderByAZ[section]}
-            }
-            numberOfRowsInSection = tempTable.count
-            
-        case .date:
-            numberOfRowsInSection = items.count
-        default:
-            let cat = categories[section].catName!
-            var tempTable = [TodoItem]()
-            let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
-            fetchRequest.predicate = NSPredicate(format: "category contains[c] %@", cat)
-            tempTable = loadGenericTodoItems(list: tempTable, request: fetchRequest)
-            numberOfRowsInSection = tempTable.count
-        }
-        return isFiltered ? filteredItems.count : numberOfRowsInSection
+        let tempTable = tempTableOrder(pathSection: section)
+        return isFiltered ? filteredItems.count : tempTable.count
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -303,29 +291,14 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var tempTable = [TodoItem]()
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cellidentifier") as! CheckItemTableViewCell
-        
-        switch sortedBy {
-        case .alphabetique:
-            if(orderByAZ[indexPath.section] == "Other"){
-                tempTable = items.filter{!alphabeticArray.contains(($0.title?.first?.uppercased())!)}
-            }else{
-                tempTable = items.filter{$0.title?.first?.uppercased() == orderByAZ[indexPath.section]}
-            }
-        case .date:
-            tempTable = items
-        default:
-            print("Items : ", items)
-            tempTable = items.filter{$0.category == categories[indexPath.section].catName};
-        }
-        //tempTable = self.sortedBy == .categorie ? items.filter{$0.category == categories[indexPath.section].catName} : items
-        
-        
+        let tempTable = tempTableOrder(pathSection: indexPath.section)
         let task = isFiltered ? filteredItems[indexPath.row] : tempTable[indexPath.row]
         cell.cellTextField.text = task.title
         cell.checkmark.isHidden = !task.checkmark
         cell.summaryLabel.text = task.summary
+        cell.dateLabel.text = task.date
+        
         if let imageData: Data = try task.image {
             let realImage = Data(base64Encoded: imageData)!
             cell.cellImage.image = UIImage(data: realImage)
@@ -345,19 +318,7 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
         if(isFiltered) {
             filteredItems[indexPath.row].checkmark = !filteredItems[indexPath.row].checkmark
         } else {
-            var tempTable = [TodoItem]()
-            switch sortedBy {
-            case .alphabetique:
-                if(orderByAZ[indexPath.section] == "Other"){
-                    tempTable = items.filter{!alphabeticArray.contains(($0.title?.first?.uppercased())!)}
-                }else{
-                    tempTable = items.filter{$0.title?.first?.uppercased() == orderByAZ[indexPath.section]}
-                }
-            case .date:
-                tempTable = items.filter{$0.category == categories[indexPath.section].catName}
-            default:
-                tempTable = items.filter{$0.category == categories[indexPath.section].catName}
-            }
+            var tempTable = tempTableOrder(pathSection: indexPath.section)
             let index = items.firstIndex{$0 == tempTable[indexPath.item]}!
             items[index].checkmark = !items[index].checkmark
         }
@@ -375,24 +336,8 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
                 index = items.firstIndex{$0 == filteredItems[indexPath.item]}!
                 filteredItems.remove(at: indexPath.row)
             } else {
-                var tempTable = [TodoItem]()
-                switch sortedBy {
-                case .alphabetique:
-                    if(orderByAZ[indexPath.section] == "Other"){
-                        tempTable = items.filter{!alphabeticArray.contains(($0.title?.first?.uppercased())!)}
-                    }else{
-                        tempTable = items.filter{$0.title?.first?.uppercased() == orderByAZ[indexPath.section]}
-                    }
-                case .date:
-                    tempTable = items.filter{$0.category == categories[indexPath.section].catName}
-                default:
-                    //                    let cat = categories[indexPath.section].catName!
-                    //                    let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
-                    //                    fetchRequest.predicate = NSPredicate(format: "category contains[c] %@", cat)
-                    tempTable = items.filter{$0.category == categories[indexPath.section].catName}
-                }
+                var tempTable = tempTableOrder(pathSection: indexPath.section)
                 index = items.firstIndex{$0 == tempTable[indexPath.row]}!
-                
                 //tempTable = loadGenericTodoItems(list: tempTable, request: fetchRequest)
             }
             deleteRowByTitle(title: items[index].title, index: index)

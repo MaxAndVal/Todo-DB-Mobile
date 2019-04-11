@@ -14,7 +14,7 @@ class CheckItemTableViewCell: UITableViewCell {
     @IBOutlet weak var checkmark: UILabel!
     @IBOutlet weak var summaryLabel: UILabel!
     @IBOutlet weak var cellImage: UIImageView!
-    
+    @IBOutlet weak var dateLabel: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
