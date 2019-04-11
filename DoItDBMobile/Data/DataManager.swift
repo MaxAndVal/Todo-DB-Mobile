@@ -44,7 +44,7 @@ class DataManager {
     
     // MARK: - Core Data Saving support
     
-    fileprivate func saveContext () {
+    fileprivate func saveContext() {
         let context = persistentContainer.viewContext
         if context.hasChanges {
             do {
@@ -60,7 +60,7 @@ class DataManager {
     func saveData() {
         saveContext()
     }
-
+    
     
     //MARK : - FireBase methods
     func saveFireBase() {
@@ -68,22 +68,14 @@ class DataManager {
         do {
             let fetchedResults = try self.context.fetch(todoItemsRequest)
             let results = fetchedResults as [NSManagedObject]
-            var i = 0
+            guard let user = Auth.auth().currentUser else {
+                return
+            }
             for item in results {
-                
-                let keys = Array(item.entity.attributesByName.keys)
-                var newData : [String:String] = [:]
-                
-                
-                for key in keys {
-                    newData.updateValue(item.primitiveValue(forKey: key) as? String ?? "", forKey: key)
+                if let realItem = item as? TodoItem {
+                    let updatedTodoItem = realItem.toSerialized()
+                    self.ref.child("users").child(user.uid).child("userData").child("TodoItems").child((item as! TodoItem).id!).updateChildValues(updatedTodoItem as [AnyHashable : Any])
                 }
-                
-                guard let user = Auth.auth().currentUser else {
-                    return
-                }
-                self.ref.child("users").child(user.uid).child("userData").child("TodoItems").child("\(i)").updateChildValues(newData)
-                i += 1
                 
             }
             print("TodoItems saved to Firebase")
@@ -92,67 +84,23 @@ class DataManager {
         }
         
         let categoryRequest: NSFetchRequest<Category> = NSFetchRequest<Category>(entityName: "Category")
-        
-        
-//         var resultList = [Category]()
-//         do {
-//         let fetchedResults = try self.context.fetch(categoryRequest)
-//         let results = fetchedResults as [NSManagedObject]
-//
-//         for item in results {
-//         resultList.append(item as! Category)
-//         }
-//            print(resultList.count)
-//         } catch let error as NSError {
-//         print("Could not fetch : \(error)")
-//         }
-        
-        // TODO : to solve
         do {
             let fetchedResults = try self.context.fetch(categoryRequest)
             let results = fetchedResults as [NSManagedObject]
-            var i = 0
-            var newData : [String:String] = [:]
-            var newArray = [String]()
-            for item in results {
-                let keys = Array(item.entity.attributesByName.keys)
-
-                for key in keys {
-                    newArray.append(item.primitiveValue(forKey: key) as! String)
-                }
-            }
-            newArray = newArray.filter({ (value) -> Bool in
-                value != "none"
-            })
-            newArray.append("none")
-            print("newArray = ", newArray)
-            var tupleArray = [(String, String)]()
-            for item in newArray {
-                tupleArray.append((String(i), item))
-                i += 1
-            }
-            newData.merge(tupleArray) { (current, _) in current }
-
-            print("Category new : ",newData)
-
+            
             guard let user = Auth.auth().currentUser else {
                 return
             }
-            self.ref.child("users").child(user.uid).child("userData").child("Categories").updateChildValues(newData)
             
-            let catRef = self.ref.child("users").child(user.uid).child("userData").child("Categories").childByAutoId()
-            catRef.setValue(newData) { (error, dataBaseRef) in
-                if error != nil {
-                    print(error)
-                    return
-                }
-                // TODD : add an ID for Category and TodoItems Entities
-                //cate.id = catRef.key
+            for item in results {
+                let updatedCat = (item as! Category).toSerialized()
+                self.ref.child("users").child(user.uid).child("userData").child("Categories").child((item as! Category).id!).updateChildValues(updatedCat as [AnyHashable : Any])
             }
-            
+            print("Categories saved to Firebase")
         } catch let error as NSError {
             print("Could not fetch : \(error)")
         }
+        
     }
     
     func loadCatFromFireBase() {
@@ -172,27 +120,99 @@ class DataManager {
     }
     
     func loadTodoItemsFromFireBase() {
-        var todoList = [TodoItem]()
         guard let user = Auth.auth().currentUser else {
             return
         }
         self.ref.child("users").child(user.uid).child("userData").child("TodoItems").observe(.value, with: { (snapshot) in
-            print("snapshot : ", snapshot)
-            for item in 0..<snapshot.childrenCount {
-                let todoItem = TodoItem(context: self.context)
-                let category = snapshot.childSnapshot(forPath: String(item)).childSnapshot(forPath: "category").value as? String
-                let checkmark = snapshot.childSnapshot(forPath: String(item)).childSnapshot(forPath: "checkmark").value as? Bool
-                let date = snapshot.childSnapshot(forPath: String(item)).childSnapshot(forPath: "date").value as? String
-                let summary = snapshot.childSnapshot(forPath: String(item)).childSnapshot(forPath: "summary").value as? String
-                let title = snapshot.childSnapshot(forPath: String(item)).childSnapshot(forPath: "title").value as? String
-                todoItem.category = category
-                todoItem.title = title
-                todoItem.checkmark = checkmark ?? false
-                todoItem.date = date
-                todoItem.summary = summary
-                todoList.append(todoItem)
+            
+            for item in snapshot.children {
+                                
+                if let itemGuard = (item as? DataSnapshot)?.value as? NSMutableDictionary {
+                    let id = itemGuard.value(forKey: "id") as? String
+                    let category = itemGuard.value(forKey: "category") as? String
+                    let date = itemGuard.value(forKey: "date") as? String
+                    let summary = itemGuard.value(forKey: "summary") as? String
+                    let title = itemGuard.value(forKey: "title") as? String
+                    let checkmark = itemGuard.value(forKey: "checkmark") as? Bool
+                    
+                    if let potentiallyItem : TodoItem = self.getId(id: id) {
+                        print("Load existing Item : ",potentiallyItem)
+                    }
+                    else {
+                        ///////////////////////////////
+                        let newItem = TodoItem.newTodoItem(context: self.context, id: id, title: title, category: category, checkmark: checkmark ?? false, date: date, image: nil, summary: summary)
+                        //newItem.id = id
+                        print("New Item fetch from FireBase", newItem)
+                    }
+                }
             }
-            print("LIST : ", todoList)
+            self.saveData()
         }, withCancel: nil)
+    }
+    
+    func getId(id :String?) -> TodoItem? {
+        var todoItem: TodoItem?
+        guard let certifiedId : String = id else {
+            return todoItem
+        }
+        let categoryRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
+        categoryRequest.predicate = NSPredicate(format: "id = %@", certifiedId)
+        do {
+            let fetchedResults = try self.context.fetch(categoryRequest)
+            let results = fetchedResults as [NSManagedObject]
+            if results.count > 0 {
+                let updatedTodo = (results[0] as! TodoItem).toSerialized()
+                if updatedTodo["id"] as? String == id {
+                    todoItem = results[0] as? TodoItem
+                }
+            }
+            
+            print("TodoItem Load from FireBase", todoItem)
+            
+        } catch let error as NSError {
+            print("Could not fetch : \(error)")
+        }
+        return todoItem
+    }
+}
+
+extension Category {
+    static func newCat(context : NSManagedObjectContext ,catName: String) -> Category {
+        let id = NSUUID().uuidString
+        let newCategory = Category(context: context)
+        newCategory.catName = catName
+        newCategory.id = id
+        return newCategory
+    }
+    
+    func toSerialized() -> [String:String?] {
+        return ["id":self.id, "catName": self.catName]
+    }
+}
+
+extension TodoItem {
+    
+    static func newTodoItem(context : NSManagedObjectContext, id: String? ,title: String?, category: String?, checkmark: Bool , date: String?, image: Data?, summary: String?) -> TodoItem {
+        let safeId : String?
+        if id == nil {
+            safeId = NSUUID().uuidString
+        } else {
+            safeId = id
+        }
+        //let id = NSUUID().uuidString
+        let NewTodoItem = TodoItem(context: context)
+        NewTodoItem.id = safeId
+        NewTodoItem.category = category
+        NewTodoItem.checkmark = checkmark
+        NewTodoItem.date = date
+        NewTodoItem.title = title
+        NewTodoItem.summary = summary
+        NewTodoItem.image = image
+        return NewTodoItem
+    }
+    
+    func toSerialized() -> [String:Any?] {
+        let boolCheckmark = self.checkmark ? 1 : 0
+        return ["id":self.id, "title": self.title, "date": self.date, "summary": self.summary, "checkmark": boolCheckmark, "category": self.category]
     }
 }

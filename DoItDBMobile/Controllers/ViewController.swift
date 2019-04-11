@@ -26,7 +26,7 @@ class ViewController: UIViewController {
     let orderByAZ = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Other"]
     let alphabeticArray = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
     
-    
+
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     
@@ -41,13 +41,12 @@ class ViewController: UIViewController {
         listToDisplaySorted()
         searchBar.delegate = self
         if(self.categories.count == 0) {
-            let initCat = Category(context: context)
-            initCat.catName = "none"
+            let initCat = Category.newCat(context: context, catName: "none")
             self.categories.append(initCat)
             saveItems()
         }
         //dataManager.loadCatFromFireBase()
-        //dataManager.loadTodoItemsFromFireBase()
+        
     }
     
     
@@ -65,6 +64,7 @@ class ViewController: UIViewController {
     //MARK : - Init()
     required init?(coder aDecoder: NSCoder) {
         super.init(coder : aDecoder)
+        dataManager.loadTodoItemsFromFireBase()
         loadItems()
         //loadFromFirebase()
     }
@@ -107,6 +107,8 @@ class ViewController: UIViewController {
     func listToDisplaySorted(){
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd MMM yy"
+        dateFormatter.timeZone = TimeZone.autoupdatingCurrent
+        self.loadItems()
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .none
         dateFormatter.locale = Locale(identifier: "fr_FR")
@@ -132,10 +134,7 @@ class ViewController: UIViewController {
             
             let newItemTitle = tf!.text!
             
-            let newItem = TodoItem(context: self.context)
-            newItem.checkmark = false
-            newItem.title = newItemTitle
-            newItem.category = "none"
+            let newItem = TodoItem.newTodoItem(context: self.context, id: nil, title: newItemTitle, category: "none", checkmark: false, date: nil, image: nil, summary: nil)
             self.items.append(newItem)
             //let tempTable = self.tempTableByCat(category: "none")
             if self.isFiltered {
@@ -144,18 +143,16 @@ class ViewController: UIViewController {
             }
             self.tableView.reloadData()
             self.saveItems()
-            self.dataManager.saveFireBase()
         }
         
         let addCat = UIAlertAction(title: "Ajouter une catégorie", style: .default) { (action) in
             let tf = alertController.textFields?[0]
             let newTask = tf!.text!
-            let newItem = Category(context: self.context)
-            newItem.catName = newTask
+            let newItem = Category.newCat(context: self.context, catName: newTask)
+            //newItem.catName = newTask
             self.categories.append(newItem)
             self.tableView.reloadData()
             self.saveItems()
-            //self.dataManager.saveFireBase()
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
@@ -194,6 +191,7 @@ class ViewController: UIViewController {
     func saveItems() {
         do {
             try self.context.save()
+            dataManager.saveFireBase()
         } catch let error as NSError {
             print("Could not save data -> error : \(error)")
         }
@@ -201,9 +199,11 @@ class ViewController: UIViewController {
     
     func loadItems() {
         let fetchRequestCat: NSFetchRequest<Category> = NSFetchRequest<Category>(entityName: "Category")
+        categories.removeAll(keepingCapacity: false)
         categories = loadGenericCategoryItems(list: categories, request: fetchRequestCat)
         
         let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
+        items.removeAll(keepingCapacity: false)
         items = loadGenericTodoItems(list: items, request: fetchRequest)
     }
     
@@ -215,6 +215,7 @@ class ViewController: UIViewController {
             let results = fetchedResults as [NSManagedObject]
             
             for item in results {
+                print("item load: ", item)
                 resultList.append(item as! TodoItem)
             }
         } catch let error as NSError {
@@ -327,7 +328,6 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
         tableView.deselectRow(at: indexPath, animated: true)
         tableView.reloadData()
         saveItems()
-        self.dataManager.saveFireBase()
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
@@ -346,7 +346,6 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
             tableView.deleteRows(at: [indexPath], with: .automatic)
             tableView.reloadData()
             saveItems()
-            self.dataManager.saveFireBase()
         }
     }
 }
