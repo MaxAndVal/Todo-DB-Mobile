@@ -11,17 +11,28 @@ import CoreData
 
 class ViewController: UIViewController {
     
+    //MARK : - Vars and IBOutlets
     var navigationBar: UINavigationBar!
-    @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var searchBar: UISearchBar!
     var items = [TodoItem]()
     let context = DataManager.SharedDataManager.context
+    let dataManager = DataManager.SharedDataManager
     var filteredItems = [TodoItem]()
     var isFiltered = false
     var categories = [Category]()
+    var sortedBy = SortedBy.categorie
     
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var searchBar: UISearchBar!
+    
+    //MARK : - ViewWilAppear
+    override func viewWillAppear(_ animated: Bool) {
+        saveItems()
+    }
+    
+    //MARK : - ViewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
+        listToDisplaySorted()
         searchBar.delegate = self
         if(self.categories.count == 0) {
             let initCat = Category(context: context)
@@ -30,51 +41,32 @@ class ViewController: UIViewController {
             saveItems()
         }
     }
+    
+    //MARK : - Init()
     required init?(coder aDecoder: NSCoder) {
         super.init(coder : aDecoder)
         loadItems()
     }
     
-    //MARK:- prepare
+
+    //MARK:- prepare for segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let indexPath = (tableView.indexPath(for: sender as! UITableViewCell))!
         if segue.identifier == "editItem"
         {
             let destVC = segue.destination as! EditItemViewController
-            var itemToUpdate:TodoItem
+            var itemToUpdate: TodoItem
             
             if(isFiltered){
-                //let test = filteredItems[(tableView.indexPath(for: sender as! UITableViewCell)?.row)!]
-                itemToUpdate = items.filter{$0 === filteredItems[(tableView.indexPath(for: sender as! UITableViewCell)?.row)!]}[0]
-            }else{
-                let section = (tableView.indexPath(for: sender as! UITableViewCell)?.section)!
-                var tempTable = tempTableByCat(category: categories[section].catName!)
-                
-                itemToUpdate = tempTable[(tableView.indexPath(for: sender as! UITableViewCell)?.row)!]
+                itemToUpdate = items.filter{$0 === filteredItems[indexPath.row]}[0]
+            } else {
+                let tempTable = items.filter{$0.category == categories[indexPath.section].catName}
+                let index = items.firstIndex{$0 == tempTable[indexPath.row]}
+                itemToUpdate = items[index!]
             }
             destVC.newItem = itemToUpdate
+            destVC.delegate = self
         }
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        saveItems()
-    }
-    
-    func tempTableByCat(category : String = "none") -> [TodoItem] {
-        var tempTable = [TodoItem]()
-        
-        let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
-        fetchRequest.predicate = NSPredicate(format: "category contains[c] %@", category)
-        
-        do {
-            let fetchedResults = try self.context.fetch(fetchRequest)
-            let results = fetchedResults as [NSManagedObject]
-            for item in results {
-                tempTable.append(item as! TodoItem)
-            }
-        } catch let error as NSError {
-            print("Could not fetch : \(error)")
-        }
-        return tempTable
     }
     
     func deleteRowByTitle(title: String?, index: Int){
@@ -89,6 +81,22 @@ class ViewController: UIViewController {
         } catch let error as NSError {
             print("error : \(error)")
         }
+    }
+    
+    func listToDisplaySorted(){
+        switch self.sortedBy {
+        case .alphabetique:
+            if (self.isFiltered){
+                filteredItems = filteredItems.sorted { $0.title!.lowercased() < $1.title!.lowercased() }
+            }else{
+                items = items.sorted { $0.title!.lowercased() < $1.title!.lowercased() }
+            }
+        case .date:
+            print("pouet")
+        default:
+            categories = categories.sorted{$0.catName!.lowercased() < $1.catName!.lowercased()}
+        }
+        self.tableView.reloadData()
     }
     
     //MARK:- Actions
@@ -106,16 +114,14 @@ class ViewController: UIViewController {
             newItem.title = newItemTitle
             newItem.category = "none"
             self.items.append(newItem)
-            let tempTable = self.tempTableByCat(category: "none")
-            if self.isFiltered
-            {
+            //let tempTable = self.tempTableByCat(category: "none")
+            if self.isFiltered {
                 self.filteredItems.append(newItem)
                 self.tableView.insertRows(at: [IndexPath(item: self.filteredItems.count - 1, section: 0)], with: .automatic)
-            }else{
-                self.tableView.insertRows(at: [IndexPath(item: tempTable.count - 1, section: 0)], with: .automatic)
             }
             self.tableView.reloadData()
             self.saveItems()
+            self.dataManager.saveFireBase()
         }
         
         let addCat = UIAlertAction(title: "Ajouter une catégorie", style: .default) { (action) in
@@ -164,39 +170,41 @@ class ViewController: UIViewController {
     
     func loadItems() {
         let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
-        do {
-            let fetchedResults = try self.context.fetch(fetchRequest)
-            let results = fetchedResults as [NSManagedObject]
-            
-            for item in results {
-                items.append(item as! TodoItem)
-            }
-            //items = results as! [TodoItem]
-        } catch let error as NSError {
-            print("Could not fetch : \(error)")
-        }
+        items = loadGenericTodoItems(list: items, request: fetchRequest)
+
         let fetchRequestCat: NSFetchRequest<Category> = NSFetchRequest<Category>(entityName: "Category")
-        do {
-            let fetchedResults = try self.context.fetch(fetchRequestCat)
-            let results = fetchedResults as [NSManagedObject]
-            
-            for item in results {
-                categories.append(item as! Category)
-            }
-        } catch let error as NSError {
-            print("Could not fetch : \(error)")
-        }
-        
+        categories = loadGenericCategoryItems(list: categories, request: fetchRequestCat)
     }
     
-    //MARK:- View Setup
-    // not used
-    func setupConstraints() {
-        navigationBar.translatesAutoresizingMaskIntoConstraints = false
-        navigationBar.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        navigationBar.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor).isActive = true
-        navigationBar.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor).isActive = true
-        navigationBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+    //MARK : - Load items Methods
+    func loadGenericTodoItems(list : [TodoItem], request: NSFetchRequest<TodoItem> ) -> [TodoItem] {
+        var resultList = list
+        do {
+            let fetchedResults = try self.context.fetch(request)
+            let results = fetchedResults as [NSManagedObject]
+            
+            for item in results {
+                resultList.append(item as! TodoItem)
+            }
+        } catch let error as NSError {
+            print("Could not fetch : \(error)")
+        }
+        return resultList
+    }
+    
+    func loadGenericCategoryItems(list : [Category] , request: NSFetchRequest<Category> ) -> [Category] {
+        var resultList = list
+        do {
+            let fetchedResults = try self.context.fetch(request)
+            let results = fetchedResults as [NSManagedObject]
+            
+            for item in results {
+                resultList.append(item as! Category)
+            }
+        } catch let error as NSError {
+            print("Could not fetch : \(error)")
+        }
+        return resultList
     }
     
 }
@@ -205,33 +213,51 @@ class ViewController: UIViewController {
 extension ViewController : UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        let title = categories[section].catName
+        let title : String
+        switch sortedBy {
+        case .alphabetique:
+            title = "A-z"
+        case .date:
+            title = "Date"
+        default:
+            title = categories[section].catName ?? ""
+        }
         return isFiltered ? "Resultat de la recherche : " : title
     }
     
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let tempTable = tempTableByCat(category: categories[section].catName!)
-        return isFiltered ? filteredItems.count : tempTable.count
+        let cat = categories[section].catName!
+        var tempTable = [TodoItem]()
+        let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
+        fetchRequest.predicate = NSPredicate(format: "category contains[c] %@", cat)
+        tempTable = loadGenericTodoItems(list: tempTable, request: fetchRequest)
+        let numberOfRowsInSection : Int;
+        switch sortedBy {
+        case .alphabetique:
+            numberOfRowsInSection = items.count
+        case .date:
+            numberOfRowsInSection = items.count
+        default:
+            numberOfRowsInSection = tempTable.count
+        }
+        return isFiltered ? filteredItems.count : numberOfRowsInSection
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return isFiltered ? 1 : categories.count
+        return isFiltered || sortedBy != .categorie ? 1 : categories.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        var tempTable = tempTableByCat(category: categories[indexPath.section].catName!)
-        
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cellidentifier") as! CheckItemTableViewCell
-        
+        let tempTable = self.sortedBy == .categorie ? items.filter{$0.category == categories[indexPath.section].catName} : items
         let task = isFiltered ? filteredItems[indexPath.row] : tempTable[indexPath.row]
         
         cell.cellTextField.text = task.title
         cell.checkmark.isHidden = !task.checkmark
         cell.summaryLabel.text = task.summary
         if let imageData: Data = try task.image {
-            cell.cellImage.image = UIImage(data: imageData)
+            let realImage = Data(base64Encoded: imageData)!
+            cell.cellImage.image = UIImage(data: realImage)
         } else {
             cell.cellImage.image = UIImage(named: "imagePickerIcone.png")
         }
@@ -240,12 +266,18 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
         if(isFiltered) {
             filteredItems[indexPath.row].checkmark = !filteredItems[indexPath.row].checkmark
-            
-        }else{
-            var tempTable = tempTableByCat(category: categories[indexPath.section].catName!)
-            tempTable[indexPath.row].checkmark = !tempTable[indexPath.row].checkmark
+        } else {
+            if(sortedBy == .categorie){
+                let tempTable = items.filter{$0.category == categories[indexPath.section].catName}
+                let index = items.firstIndex{$0 == tempTable[indexPath.item]}!
+                items[index].checkmark = !items[index].checkmark
+            }else{
+                items[indexPath.row].checkmark = !items[indexPath.row].checkmark
+            }
+
         }
         tableView.deselectRow(at: indexPath, animated: true)
         tableView.reloadData()
@@ -253,20 +285,22 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        
-        
+        let index : Int;
         if (editingStyle == .delete) {
             if isFiltered
             {
-                let index = items.firstIndex{$0 == filteredItems[indexPath.item]}
+                index = items.firstIndex{$0 == filteredItems[indexPath.item]}!
                 filteredItems.remove(at: indexPath.row)
-                deleteRowByTitle(title: items[index!].title, index: index!)
+            } else {
+                let cat = categories[indexPath.section].catName!
+                let tempTable = items.filter{$0.category == cat}
+                index = items.firstIndex{$0 == tempTable[indexPath.row]}!
+                
+                let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
+                fetchRequest.predicate = NSPredicate(format: "category contains[c] %@", cat)
+                //tempTable = loadGenericTodoItems(list: tempTable, request: fetchRequest)
             }
-            else{
-                var tempTable = tempTableByCat(category: categories[indexPath.section].catName!)
-                let index = items.firstIndex{$0 == tempTable[indexPath.row]} ?? -1
-                deleteRowByTitle(title: items[index].title, index : index)
-            }
+            deleteRowByTitle(title: items[index].title, index: index)
             tableView.deleteRows(at: [indexPath], with: .automatic)
             tableView.reloadData()
             saveItems()
@@ -277,54 +311,57 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
 //MARK : - SearchBar
 extension ViewController : UISearchBarDelegate {
     
+    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+        switch selectedScope {
+        case 1:
+            sortedBy = .alphabetique
+        case 2:
+            print("2")
+            sortedBy = .date
+        default:
+            sortedBy = .categorie
+        }
+        listToDisplaySorted()
+    }
+    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if(searchBar.text?.count==0){
+        if (searchBar.text?.count==0) {
             isFiltered = false
             tableView.reloadData()
-        }else{
+        } else {
             filteredItems = []
             isFiltered = true
-            print("test", items)
-            
             let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
             fetchRequest.predicate = NSPredicate(format: "title contains[c] %@", searchText)
-            do {
-                let fetchedResults = try self.context.fetch(fetchRequest)
-                let results = fetchedResults as [NSManagedObject]
-                
-                for item in results {
-                    self.filteredItems.append(item as! TodoItem)
-                }
-                self.tableView.reloadData()
-            } catch let error as NSError {
-                print("Could not fetch : \(error)")
-            }
+            self.filteredItems = loadGenericTodoItems(list: self.filteredItems, request: fetchRequest)
+            self.tableView.reloadData()
         }
     }
     
+    
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         print("searchBarTextDidEndEditing")
-        if(searchBar.text?.count==0){
+        if (searchBar.text?.count==0) {
             isFiltered = false
             tableView.reloadData()
-        }else{
+        } else {
             filteredItems = []
             isFiltered = true
             
             let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
             fetchRequest.predicate = NSPredicate(format: "title contains[c] %@", self.searchBar.text ?? "")
-            do {
-                let fetchedResults = try self.context.fetch(fetchRequest)
-                let results = fetchedResults as [NSManagedObject]
-                
-                for item in results {
-                    self.filteredItems.append(item as! TodoItem)
-                }
-                self.tableView.reloadData()
-            } catch let error as NSError {
-                print("Could not fetch : \(error)")
-            }
+            self.filteredItems = loadGenericTodoItems(list: self.filteredItems, request: fetchRequest)
+            self.tableView.reloadData()
         }
+    }
+}
+
+extension ViewController : EditItemControllerDelegate {
+    
+    func didFinishEditItem(controller: ViewController, item: TodoItem) {
+        controller.tableView.reloadData()
+        controller.searchBarTextDidEndEditing(controller.searchBar)
+        navigationController?.popViewController(animated: true)
     }
 }
 

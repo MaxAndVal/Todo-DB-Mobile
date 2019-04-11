@@ -7,6 +7,10 @@ target 'DoItDBMobile' do
   
   pod 'SnapKit', '~> 4.0.0'
   pod 'IQKeyboardManagerSwift', '~> 6.0.0'
+  pod 'Firebase/Core'
+  pod 'Firebase/Database'
+  pod 'FirebaseUI'
+  pod 'Firebase'
 
 
   # Pods for DoItDBMobile
