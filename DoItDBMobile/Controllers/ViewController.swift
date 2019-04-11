@@ -375,7 +375,7 @@ extension ViewController : UISearchBarDelegate {
             filteredItems = []
             isFiltered = true
             let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
-            fetchRequest.predicate = NSPredicate(format: "title contains[c] %@", searchText)
+            fetchRequest.predicate = NSPredicate(format: "title contains[cd] %@", searchText)
             self.filteredItems = loadGenericTodoItems(list: self.filteredItems, request: fetchRequest)
             self.tableView.reloadData()
         }
