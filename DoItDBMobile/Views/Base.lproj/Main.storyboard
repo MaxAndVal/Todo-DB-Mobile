@@ -67,6 +67,12 @@
                                                     <color key="shadowColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <size key="shadowOffset" width="2" height="2"/>
                                                 </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xno-6N-4Hf">
+                                                    <rect key="frame" x="250" y="86.5" width="42" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstAttribute="bottom" secondItem="4aq-f3-Fmv" secondAttribute="bottom" constant="4" id="01c-ac-eZr"/>
@@ -78,7 +84,9 @@
                                                 <constraint firstItem="MPN-RB-HXw" firstAttribute="top" secondItem="Jps-Rz-Fj3" secondAttribute="bottom" constant="8" id="cm5-ix-mCH"/>
                                                 <constraint firstItem="svA-aQ-rid" firstAttribute="leading" secondItem="9fO-Hb-eVy" secondAttribute="leadingMargin" id="gwM-JV-5ng"/>
                                                 <constraint firstItem="svA-aQ-rid" firstAttribute="top" secondItem="9fO-Hb-eVy" secondAttribute="topMargin" id="hBC-aw-jc4"/>
+                                                <constraint firstItem="xno-6N-4Hf" firstAttribute="leading" secondItem="Jps-Rz-Fj3" secondAttribute="leading" id="k2h-JJ-VXy"/>
                                                 <constraint firstItem="Jps-Rz-Fj3" firstAttribute="leading" secondItem="4aq-f3-Fmv" secondAttribute="trailing" constant="8" id="nph-Ij-kak"/>
+                                                <constraint firstItem="xno-6N-4Hf" firstAttribute="top" secondItem="MPN-RB-HXw" secondAttribute="bottom" constant="25" id="oEB-g8-qV1"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="Jps-Rz-Fj3" secondAttribute="trailing" constant="8" id="s8H-dA-RR5"/>
                                             </constraints>
                                         </tableViewCellContentView>
@@ -86,6 +94,7 @@
                                             <outlet property="cellImage" destination="4aq-f3-Fmv" id="iP1-Jv-tZI"/>
                                             <outlet property="cellTextField" destination="Jps-Rz-Fj3" id="KFg-gT-hXm"/>
                                             <outlet property="checkmark" destination="svA-aQ-rid" id="tew-te-54x"/>
+                                            <outlet property="dateLabel" destination="xno-6N-4Hf" id="aLV-YY-0iG"/>
                                             <outlet property="summaryLabel" destination="MPN-RB-HXw" id="zvD-Dy-4Sj"/>
                                             <segue destination="LKL-CY-nvr" kind="show" identifier="editItem" trigger="accessoryAction" id="wlY-lR-Lq7"/>
                                         </connections>

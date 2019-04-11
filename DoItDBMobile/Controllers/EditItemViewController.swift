@@ -136,7 +136,11 @@ class EditItemViewController: UIViewController, UINavigationControllerDelegate {
         let controller = navigationController?.viewControllers[0] as! ViewController
         newItem?.title = tf.text!
         newItem?.summary = tv_description.text
-        newItem?.date = datePicker.date.description
+        
+        let dateFormatterPrint = DateFormatter()
+        dateFormatterPrint.dateFormat = "dd MMM yy"
+        
+        newItem?.date = dateFormatterPrint.string(from: datePicker.date)
         newItem?.category = categoryTextField.text
         let data = icone.image?.jpegData(compressionQuality: 0.5)
         let realData = data?.base64EncodedData()
