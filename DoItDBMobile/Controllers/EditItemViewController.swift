@@ -40,7 +40,7 @@ class EditItemViewController: UIViewController, UINavigationControllerDelegate {
         
         self.dateFormatter.dateStyle = .medium
         self.dateFormatter.timeStyle = .none
-        self.dateFormatter.dateFormat = "dd MMM yy"
+        self.dateFormatter.dateFormat = "dd MMM yyyy"
         self.dateFormatter.locale = Locale(identifier: "fr_FR")
         
         categoryPicker.dataSource = self
@@ -85,9 +85,8 @@ class EditItemViewController: UIViewController, UINavigationControllerDelegate {
             categoryTextField.text = realNewItem.category
             
             if let realDate: String = realNewItem.date {
-                dateTextField.text = realDate//self.dateFormatter.string(from: realDate)
+                dateTextField.text = realDate
                 datePicker.date = dateFormatter.date(from: realDate) ?? Date()
-
             }
             tv_description.text = realNewItem.summary
             tf.text = realNewItem.title

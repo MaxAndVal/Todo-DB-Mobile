@@ -42,10 +42,6 @@ class ViewController: UIViewController {
         searchBar.delegate = self
         if(self.categories.count == 0) {
             let initCat = Category.newCat(context: context, catName: "none")
-            //let initCat = Category(context: context)
-            //let id = NSUUID().uuidString
-            //initCat.catName = "none"
-            //initCat.id = id
             self.categories.append(initCat)
             saveItems()
         }
@@ -325,7 +321,6 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
         tableView.deselectRow(at: indexPath, animated: true)
         tableView.reloadData()
         saveItems()
-        self.dataManager.saveFireBase()
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
