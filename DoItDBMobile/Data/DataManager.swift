@@ -90,10 +90,8 @@ class DataManager {
                 //keys.remove(at: 1)
                 var tab : [String:String] = [:]
                 
-                print("item \(i) : ",item)
                 for key in keys {
                     tab.updateValue(item.primitiveValue(forKey: key) as? String ?? "", forKey: key)
-                    print("tab : ",tab)
                 }
                 self.ref.child("Users").child("Task_\(i)").setValue(tab)
                 i += 1
