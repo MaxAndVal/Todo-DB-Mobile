@@ -20,6 +20,7 @@
 		9C3B119922525B8D00BA5D7E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9C3B119822525B8D00BA5D7E /* GoogleService-Info.plist */; };
 		9C69979F223F9DE4006B562A /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C69979E223F9DE4006B562A /* DataManager.swift */; };
 		9C86DCF9223F8D3B006952BA /* DoItDBMobile.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9C86DCF7223F8D3B006952BA /* DoItDBMobile.xcdatamodeld */; };
+		9C952CD0225C565600F58DA3 /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C952CCF225C565600F58DA3 /* LoginController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +40,7 @@
 		9C3B119822525B8D00BA5D7E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		9C69979E223F9DE4006B562A /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		9C86DCF8223F8D3B006952BA /* DoItDBMobile.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DoItDBMobile.xcdatamodel; sourceTree = "<group>"; };
+		9C952CCF225C565600F58DA3 /* LoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
 		A5D191CEBF345841BCDEF03F /* Pods-DoItDBMobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DoItDBMobile.debug.xcconfig"; path = "Target Support Files/Pods-DoItDBMobile/Pods-DoItDBMobile.debug.xcconfig"; sourceTree = "<group>"; };
 		B7BC67346A905CDCD1E0F8C7 /* Pods-DoItDBMobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DoItDBMobile.release.xcconfig"; path = "Pods/Target Support Files/Pods-DoItDBMobile/Pods-DoItDBMobile.release.xcconfig"; sourceTree = "<group>"; };
 		C508D70105CC524B61AAA805 /* Pods_DoItDBMobile.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DoItDBMobile.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -133,6 +135,7 @@
 			children = (
 				9C381A02221FEEE40061D139 /* ViewController.swift */,
 				9C381A19222040D80061D139 /* EditItemViewController.swift */,
+				9C952CCF225C565600F58DA3 /* LoginController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -333,6 +336,7 @@
 				9C381A01221FEEE40061D139 /* AppDelegate.swift in Sources */,
 				9C381A18222039210061D139 /* CheckItemTableViewCell.swift in Sources */,
 				9C86DCF9223F8D3B006952BA /* DoItDBMobile.xcdatamodeld in Sources */,
+				9C952CD0225C565600F58DA3 /* LoginController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

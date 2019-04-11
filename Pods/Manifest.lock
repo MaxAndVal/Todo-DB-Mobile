@@ -191,6 +191,7 @@ DEPENDENCIES:
   - Firebase
   - Firebase/Core
   - Firebase/Database
+  - Firebase/Storage
   - FirebaseUI
   - IQKeyboardManagerSwift (~> 6.0.0)
   - SnapKit (~> 4.0.0)
@@ -258,6 +259,10 @@ SPEC CHECKSUMS:
   TwitterCore: 8cbc9ad34d91c63a0035ea05bfbfc0d7ca72a28c
   TwitterKit: 5e4f41d70b9abdb41df5467f52d7aa2c0fd26ebb
 
+<<<<<<< HEAD
+PODFILE CHECKSUM: 917bc647db99ec6eaeae9137e35d4df3cbce03ef
+=======
 PODFILE CHECKSUM: c4e6d24ead777f50bab5db33fadf0dc2bca5ef8a
+>>>>>>> origin/master
 
 COCOAPODS: 1.5.2
