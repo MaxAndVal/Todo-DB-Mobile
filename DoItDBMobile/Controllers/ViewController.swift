@@ -41,13 +41,17 @@ class ViewController: UIViewController {
         listToDisplaySorted()
         searchBar.delegate = self
         if(self.categories.count == 0) {
-            let initCat = Category(context: context)
-            initCat.catName = "none"
+            let initCat = Category.newCat(context: context, catName: "none")
+            //let initCat = Category(context: context)
+            //let id = NSUUID().uuidString
+            //initCat.catName = "none"
+            //initCat.id = id
             self.categories.append(initCat)
             saveItems()
         }
         //dataManager.loadCatFromFireBase()
         //dataManager.loadTodoItemsFromFireBase()
+        
     }
     
     
@@ -138,10 +142,7 @@ class ViewController: UIViewController {
             
             let newItemTitle = tf!.text!
             
-            let newItem = TodoItem(context: self.context)
-            newItem.checkmark = false
-            newItem.title = newItemTitle
-            newItem.category = "none"
+            let newItem = TodoItem.newTodoItem(context: self.context, title: newItemTitle, category: "none", checkmark: false, date: nil, image: nil, summary: nil)
             self.items.append(newItem)
             //let tempTable = self.tempTableByCat(category: "none")
             if self.isFiltered {
@@ -150,18 +151,16 @@ class ViewController: UIViewController {
             }
             self.tableView.reloadData()
             self.saveItems()
-            self.dataManager.saveFireBase()
         }
         
         let addCat = UIAlertAction(title: "Ajouter une catégorie", style: .default) { (action) in
             let tf = alertController.textFields?[0]
             let newTask = tf!.text!
-            let newItem = Category(context: self.context)
-            newItem.catName = newTask
+            let newItem = Category.newCat(context: self.context, catName: newTask)
+            //newItem.catName = newTask
             self.categories.append(newItem)
             self.tableView.reloadData()
             self.saveItems()
-            //self.dataManager.saveFireBase()
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
@@ -200,6 +199,7 @@ class ViewController: UIViewController {
     func saveItems() {
         do {
             try self.context.save()
+            dataManager.saveFireBase()
         } catch let error as NSError {
             print("Could not save data -> error : \(error)")
         }
