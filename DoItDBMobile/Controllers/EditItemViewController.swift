@@ -40,6 +40,7 @@ class EditItemViewController: UIViewController, UINavigationControllerDelegate {
         
         self.dateFormatter.dateStyle = .medium
         self.dateFormatter.timeStyle = .none
+        self.dateFormatter.dateFormat = "dd MMM yy"
         self.dateFormatter.locale = Locale(identifier: "fr_FR")
         
         categoryPicker.dataSource = self
@@ -82,11 +83,11 @@ class EditItemViewController: UIViewController, UINavigationControllerDelegate {
                 newItem?.category = "none"
             }
             categoryTextField.text = realNewItem.category
+            
             if let realDate: String = realNewItem.date {
-                dateTextField.text = self.dateFormatter.string(for: realDate)//self.dateFormatter.string(from: realDate)
-                datePicker.date = self.dateFormatter.date(from: realDate) ?? Date()
-            } else {
-                datePicker.date = Date()
+                dateTextField.text = realDate//self.dateFormatter.string(from: realDate)
+                datePicker.date = dateFormatter.date(from: realDate) ?? Date()
+
             }
             tv_description.text = realNewItem.summary
             tf.text = realNewItem.title
@@ -117,7 +118,6 @@ class EditItemViewController: UIViewController, UINavigationControllerDelegate {
     func chooseDate() {
         let date: Date = datePicker.date
         self.dateTextField.text =  "\(self.dateFormatter.string(from: date))"
-        print("here")
     }
     
     // Image Picker
@@ -136,12 +136,12 @@ class EditItemViewController: UIViewController, UINavigationControllerDelegate {
         let controller = navigationController?.viewControllers[0] as! ViewController
         newItem?.title = tf.text!
         newItem?.summary = tv_description.text
-        
-        let dateFormatterPrint = DateFormatter()
-        dateFormatterPrint.dateFormat = "dd MMM yy"
-        
-        newItem?.date = dateFormatterPrint.string(from: datePicker.date)
+        let dateText = dateTextField.text ?? ""
+        if(!dateText.isEmpty){
+            newItem?.date = dateFormatter.string(from: datePicker.date)
+        }
         newItem?.category = categoryTextField.text
+        
         let data = icone.image?.jpegData(compressionQuality: 0.5)
         let realData = data?.base64EncodedData()
         newItem?.setValue(realData, forKey: "image")
