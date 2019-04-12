@@ -79,8 +79,8 @@ class EditItemViewController: UIViewController, UINavigationControllerDelegate {
             } else {
                 icone.image = UIImage(named: "imagePickerIcone.png")
             }
-            if realNewItem.category?.isEmpty ?? false {
-                newItem?.category = "none"
+            if realNewItem.category?.isEmpty ?? false  || realNewItem.category == nil{
+                newItem?.category = ""
             }
             categoryTextField.text = realNewItem.category
             
@@ -144,7 +144,11 @@ class EditItemViewController: UIViewController, UINavigationControllerDelegate {
         if(!dateText.isEmpty){
             newItem?.date = dateFormatter.string(from: datePicker.date)
         }
-        newItem?.category = categoryTextField.text
+        if(categoryTextField.text?.isEmpty ?? true){
+            newItem?.category = nil
+        }else{
+            newItem?.category = categoryTextField.text
+        }
         
         let data = icone.image?.jpegData(compressionQuality: 0.5)
         let realData = data?.base64EncodedData()
