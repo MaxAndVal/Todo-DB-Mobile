@@ -125,6 +125,11 @@ class EditItemViewController: UIViewController, UINavigationControllerDelegate {
         self.dismiss(animated: true, completion: nil)
     }
     
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        print("image selection cancelled")
+        dismiss(animated: true, completion: nil)
+    }
+    
     @objc
     func selectImage () {
         present(imagePicker, animated: true, completion: nil)

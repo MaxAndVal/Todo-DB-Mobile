@@ -45,7 +45,6 @@ class ViewController: UIViewController {
             self.categories.append(initCat)
             saveItems()
         }
-        //dataManager.loadCatFromFireBase()
         
     }
     
@@ -65,8 +64,8 @@ class ViewController: UIViewController {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder : aDecoder)
         dataManager.loadTodoItemsFromFireBase()
+        //dataManager.loadCatFromFireBase()
         loadItems()
-        //loadFromFirebase()
     }
     
     
@@ -149,7 +148,6 @@ class ViewController: UIViewController {
             let tf = alertController.textFields?[0]
             let newTask = tf!.text!
             let newItem = Category.newCat(context: self.context, catName: newTask)
-            //newItem.catName = newTask
             self.categories.append(newItem)
             self.tableView.reloadData()
             self.saveItems()
@@ -308,10 +306,6 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
         } else {
             cell.cellImage.image = UIImage(named: "imagePickerIcone.png")
         }
-        
-        //let task = isFiltered ? filteredItems[indexPath.row] : tempTable[indexPath.row]
-        
-        
         
         return cell
     }
