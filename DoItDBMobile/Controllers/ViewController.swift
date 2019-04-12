@@ -95,6 +95,7 @@ class ViewController: UIViewController {
             let result = try self.context.fetch(request)
             items.remove(at: index)
             for item in result {
+                dataManager.deleteTodoItemsFromFireBase(todoItem: item)
                 context.delete(item)
             }
         } catch let error as NSError {

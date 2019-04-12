@@ -127,6 +127,12 @@ class DataManager {
             self.saveData()
         }, withCancel: nil)
     }
+    func deleteTodoItemsFromFireBase(todoItem : TodoItem){
+        guard let user = Auth.auth().currentUser else {
+            return
+        }
+        self.ref.child("users").child(user.uid).child("userData").child("TodoItems").child(todoItem.id!).setValue(nil)
+    }
     
     func loadTodoItemsFromFireBase() {
         guard let user = Auth.auth().currentUser else {
@@ -199,8 +205,6 @@ class DataManager {
                     category = results[0] as? Category
                 }
             }
-            print("category Load from FireBase", category)
-            
         } catch let error as NSError {
             print("Could not fetch : \(error)")
         }
@@ -236,10 +240,16 @@ extension TodoItem {
         } else {
             safeId = id
         }
+        let realCat : String?
+        if category?.isEmpty ?? true{
+            realCat = nil
+        }else{
+            realCat = category
+        }
         //let id = NSUUID().uuidString
         let NewTodoItem = TodoItem(context: context)
         NewTodoItem.id = safeId
-        NewTodoItem.category = category
+        NewTodoItem.category = realCat
         NewTodoItem.checkmark = checkmark
         NewTodoItem.date = date
         NewTodoItem.title = title
