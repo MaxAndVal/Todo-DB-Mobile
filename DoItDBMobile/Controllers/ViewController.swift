@@ -20,13 +20,13 @@ class ViewController: UIViewController {
     var filteredItems = [TodoItem]()
     var isFiltered = false
     var categories = [Category]()
-
+    
     var ref = Database.database().reference()
     var sortedBy = SortedBy.categorie
     let orderByAZ = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Other"]
     let alphabeticArray = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
     
-
+    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     
@@ -41,8 +41,6 @@ class ViewController: UIViewController {
         listToDisplaySorted()
         searchBar.delegate = self
         if(self.categories.count == 0) {
-            let initCat = Category.newCat(context: context, catName: "none")
-            self.categories.append(initCat)
             saveItems()
         }
         
@@ -64,7 +62,7 @@ class ViewController: UIViewController {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder : aDecoder)
         dataManager.loadTodoItemsFromFireBase()
-        //dataManager.loadCatFromFireBase()
+        dataManager.loadCatFromFireBase()
         loadItems()
     }
     
@@ -89,6 +87,7 @@ class ViewController: UIViewController {
         }
     }
     
+    //MARK:- Fonction relative à la gestion de la table
     func deleteRowByTitle(title: String?, index: Int){
         let request = NSFetchRequest<TodoItem>(entityName: "TodoItem")
         request.predicate = NSPredicate(format: "title = %@", title ?? "")
@@ -133,7 +132,7 @@ class ViewController: UIViewController {
             
             let newItemTitle = tf!.text!
             
-            let newItem = TodoItem.newTodoItem(context: self.context, id: nil, title: newItemTitle, category: "none", checkmark: false, date: nil, image: nil, summary: nil)
+            let newItem = TodoItem.newTodoItem(context: self.context, id: nil, title: newItemTitle, category: nil, checkmark: false, date: nil, image: nil, summary: nil)
             self.items.append(newItem)
             //let tempTable = self.tempTableByCat(category: "none")
             if self.isFiltered {
@@ -147,7 +146,7 @@ class ViewController: UIViewController {
         let addCat = UIAlertAction(title: "Ajouter une catégorie", style: .default) { (action) in
             let tf = alertController.textFields?[0]
             let newTask = tf!.text!
-            let newItem = Category.newCat(context: self.context, catName: newTask)
+            let newItem = Category.newCat(context: self.context, catName: newTask, id:nil)
             self.categories.append(newItem)
             self.tableView.reloadData()
             self.saveItems()
@@ -172,7 +171,6 @@ class ViewController: UIViewController {
                     
                     addTask.isEnabled = textIsNotEmpty
                     addCat.isEnabled = textIsNotEmpty
-                    
             })
         }
         present(alertController, animated: true)
@@ -237,6 +235,7 @@ class ViewController: UIViewController {
         return resultList
     }
     
+    //Permet de récuperer les tables à afficher par par section
     func tempTableOrder(pathSection : Int) -> [TodoItem]{
         var tempTable = [TodoItem]()
         switch sortedBy {
@@ -249,12 +248,14 @@ class ViewController: UIViewController {
         case .date:
             tempTable = items
         default:
-            tempTable = items.filter{$0.category == categories[pathSection].catName};
+            if(pathSection >= categories.count){
+                tempTable = items.filter{$0.category == nil}
+            }else{
+                tempTable = items.filter{$0.category == categories[pathSection].catName};
+            }
         }
         return tempTable
     }
-
-    
 }
 
 //MARK: - Table view
@@ -268,9 +269,18 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
         case .date:
             title = "Date"
         default:
-            title = categories[section].catName ?? ""
+            if(section >= categories.count){
+                title = "a catégoriser"
+            }else{
+                title = categories[section].catName ?? ""
+            }
         }
         return isFiltered ? "Resultat de la recherche : " : title
+    }
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        if let headerView = view as? UITableViewHeaderFooterView {
+            headerView.textLabel?.textAlignment = .center
+        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -286,7 +296,7 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
         case .date:
             numberOfSection = 1
         default:
-            numberOfSection = categories.count
+            numberOfSection = categories.count+1
         }
         return isFiltered ? 1 : numberOfSection
     }
@@ -352,7 +362,6 @@ extension ViewController : UISearchBarDelegate {
         case 1:
             sortedBy = .alphabetique
         case 2:
-            print("2")
             sortedBy = .date
         default:
             sortedBy = .categorie
