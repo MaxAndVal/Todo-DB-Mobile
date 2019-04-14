@@ -35,7 +35,6 @@ class DataManager {
         let container = NSPersistentContainer(name: "DoItDBMobile")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
-                
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
         })
@@ -80,8 +79,8 @@ class DataManager {
                         storageReference.putData(imageToUpload, metadata: nil) { (metaData, error) in
                             if error != nil {
                                 print("error when uploading image : ", error!)
+                                return
                             }
-                            print("ref path = /// /// ",storageReference.fullPath)
                             storageReference.downloadURL(completion: { (url, error) in
                                 if error != nil {
                                     print(error!)
@@ -115,7 +114,7 @@ class DataManager {
             
             for item in results {
                 if let realCat = item as? Category {
-                    let updatedCat = (realCat as! Category).toSerialized()
+                    let updatedCat = realCat.toSerialized()
                     self.ref.child("users").child(user.uid).child("userData").child("Categories").child((item as! Category).id!).updateChildValues(updatedCat as [AnyHashable : Any])
                 }}
             print("Categories saved to Firebase")
@@ -125,7 +124,7 @@ class DataManager {
     }
     
     func loadCatFromFireBase() {
-        var catList = [Category]()
+        let catList = [Category]()
         guard let user = Auth.auth().currentUser else {
             return
         }
@@ -136,11 +135,10 @@ class DataManager {
                     let id = catGuard.value(forKey:"id") as? String
                     let categoy = catGuard.value(forKey: "catName") as? String
                     if let potentialCat : Category = self.getIdCat(id: id){
-                        print("Load existing Item : ", potentialCat)
+                        print("Load existing Cat : ", potentialCat)
                     }else{
                         let newCat = Category.newCat(context: self.context, catName: categoy!, id: id)
-                        print("New Item fetch from FireBase", newCat)
-                        
+                        print("New Cat fetched from FireBase", newCat)
                     }
                 }
             }
@@ -148,6 +146,7 @@ class DataManager {
             self.saveData()
         }, withCancel: nil)
     }
+    
     func deleteTodoItemsFromFireBase(todoItem : TodoItem){
         guard let user = Auth.auth().currentUser else {
             return
@@ -183,26 +182,22 @@ class DataManager {
                             image = data?.base64EncodedData()
                             if let potentiallyItem : TodoItem = self.getId(id: id) {
                                 potentiallyItem.image = image
-                                self.saveData()
                                 print("Existing Item fetch from FireBase with image", potentiallyItem)
                             } else {
                                 let newItem = TodoItem.newTodoItem(context: self.context, id: id, title: title, category: category, checkmark: checkmark ?? false, date: date, image: image, summary: summary)
-                                self.saveData()
                                 print("New Item fetch from FireBase with image", newItem)
                             }
                         })
                     } else if image == nil {
                         if let potentiallyItem : TodoItem = self.getId(id: id) {
-                            self.saveData()
                             print("Existing Item fetch from FireBase", potentiallyItem)
-                
+                            
                         } else {
                             let newItem = TodoItem.newTodoItem(context: self.context, id: id, title: title, category: category, checkmark: checkmark ?? false, date: date, image: nil, summary: summary)
-                            self.saveData()
                             print("New Item fetch from FireBase", newItem)
                         }
-                        
                     }
+                    self.saveData()
                 }
             }
         }, withCancel: nil)

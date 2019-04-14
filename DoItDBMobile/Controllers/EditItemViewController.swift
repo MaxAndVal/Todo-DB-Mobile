@@ -46,12 +46,14 @@ class EditItemViewController: UIViewController, UINavigationControllerDelegate {
         categoryPicker.dataSource = self
         categoryPicker.delegate = self
         
+        setupTvDescription()
         initImageTouchListener()
         fillFields()
         datePicker.datePickerMode = .date
         datePicker.locale = Locale(identifier: "fr_FR")
-        
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done))
+        navigationItem.rightBarButtonItem?.tintColor = #colorLiteral(red: 0, green: 0.5690457821, blue: 0.5746168494, alpha: 1)
+        navigationItem.backBarButtonItem?.tintColor = #colorLiteral(red: 0, green: 0.5690457821, blue: 0.5746168494, alpha: 1)
         bindKeyBoards()
     }
     
@@ -111,6 +113,14 @@ class EditItemViewController: UIViewController, UINavigationControllerDelegate {
         imagePicker.delegate = self
         imagePicker.sourceType = .photoLibrary
         imagePicker.allowsEditing = true
+    }
+    
+    //MARK: - Setup tv_description
+    func setupTvDescription() {
+        tv_description.translatesAutoresizingMaskIntoConstraints = false
+        tv_description.layer.cornerRadius = 4
+        tv_description.layer.borderWidth = 1
+        tv_description.layer.borderColor = #colorLiteral(red: 0.8980392157, green: 0.8980392157, blue: 0.8980392157, alpha: 1)
     }
     
     //MARK : - Date Picker
