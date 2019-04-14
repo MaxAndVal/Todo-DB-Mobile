@@ -61,7 +61,6 @@ class DataManager {
         saveContext()
     }
     
-    
     //MARK : - FireBase methods
     func saveFireBase() {
         let todoItemsRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
@@ -73,8 +72,30 @@ class DataManager {
             }
             for item in results {
                 if let realItem = item as? TodoItem {
-                    let updatedTodoItem = realItem.toSerialized()
-                    self.ref.child("users").child(user.uid).child("userData").child("TodoItems").child((item as! TodoItem).id!).updateChildValues(updatedTodoItem as [AnyHashable : Any])
+                    let storageReference = Storage.storage().reference().child("todoImage\(realItem.id!).png")
+                    var imageUrl : String?
+                    var updatedTodoItem = realItem.toSerialized()
+                    if let possibleImageToUpload = realItem.image {
+                        let imageToUpload = Data(base64Encoded: possibleImageToUpload)!
+                        storageReference.putData(imageToUpload, metadata: nil) { (metaData, error) in
+                            if error != nil {
+                                print("error when uploading image : ", error!)
+                            }
+                            print("ref path = /// /// ",storageReference.fullPath)
+                            storageReference.downloadURL(completion: { (url, error) in
+                                if error != nil {
+                                    print(error!)
+                                    return
+                                }
+                                imageUrl = url?.absoluteString
+                                updatedTodoItem.merge(["image": imageUrl]) { (current, _) in current }
+                                
+                                self.ref.child("users").child(user.uid).child("userData").child("TodoItems").child((item as! TodoItem).id!).updateChildValues(updatedTodoItem as [AnyHashable : Any])
+                            })
+                        }
+                    } else {
+                        self.ref.child("users").child(user.uid).child("userData").child("TodoItems").child((item as! TodoItem).id!).updateChildValues(updatedTodoItem as [AnyHashable : Any])
+                    }
                 }
                 
             }
@@ -149,19 +170,41 @@ class DataManager {
                     let summary = itemGuard.value(forKey: "summary") as? String
                     let title = itemGuard.value(forKey: "title") as? String
                     let checkmark = itemGuard.value(forKey: "checkmark") as? Bool
+                    let imageString = itemGuard.value(forKey: "image") as? String
+                    var image : Data? = nil
                     
-                    if let potentiallyItem : TodoItem = self.getId(id: id) {
-                        print("Load existing Item : ",potentiallyItem)
-                    }
-                    else {
-                        ///////////////////////////////
-                        let newItem = TodoItem.newTodoItem(context: self.context, id: id, title: title, category: category, checkmark: checkmark ?? false, date: date, image: nil, summary: summary)
-                        //newItem.id = id
-                        print("New Item fetch from FireBase", newItem)
+                    if imageString != nil {
+                        let storeRef = Storage.storage().reference(forURL: imageString!)
+                        storeRef.getData(maxSize: 1*2048*2048, completion: { (data, error) in
+                            if error != nil {
+                                print("error with image from firestorage", error!)
+                                return
+                            }
+                            image = data?.base64EncodedData()
+                            if let potentiallyItem : TodoItem = self.getId(id: id) {
+                                potentiallyItem.image = image
+                                self.saveData()
+                                print("Existing Item fetch from FireBase with image", potentiallyItem)
+                            } else {
+                                let newItem = TodoItem.newTodoItem(context: self.context, id: id, title: title, category: category, checkmark: checkmark ?? false, date: date, image: image, summary: summary)
+                                self.saveData()
+                                print("New Item fetch from FireBase with image", newItem)
+                            }
+                        })
+                    } else if image == nil {
+                        if let potentiallyItem : TodoItem = self.getId(id: id) {
+                            self.saveData()
+                            print("Existing Item fetch from FireBase", potentiallyItem)
+                
+                        } else {
+                            let newItem = TodoItem.newTodoItem(context: self.context, id: id, title: title, category: category, checkmark: checkmark ?? false, date: date, image: nil, summary: summary)
+                            self.saveData()
+                            print("New Item fetch from FireBase", newItem)
+                        }
+                        
                     }
                 }
             }
-            self.saveData()
         }, withCancel: nil)
     }
     
@@ -181,7 +224,7 @@ class DataManager {
                     todoItem = results[0] as? TodoItem
                 }
             }
-            print("TodoItem Load from FireBase", todoItem)
+            print("TodoItem Load from FireBase", todoItem as Any)
             
         } catch let error as NSError {
             print("Could not fetch : \(error)")

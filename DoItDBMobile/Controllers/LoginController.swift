@@ -72,32 +72,15 @@ class LoginController: UIViewController {
             print("Form not complete")
             return
         }
-        Auth.auth().createUser(withEmail: email, password: password) { (authResult : AuthDataResult?, error :Error?) in
-            
+        Auth.auth().signIn(withEmail: email, password: password) { (result, error) in
             if error != nil {
                 print(error)
                 return
             }
             print("user logged succesfully")
-//            guard let user = authResult?.user else {
-//                return
-//            }
-//
-//            //succesfully authenticated user
-//            let values = ["name": name, "email": email]
-//            let ref = Database.database().reference(fromURL: "https://todoapp-e390f.firebaseio.com/").child("users")
-//            ref.child(user.uid).child("userData").updateChildValues(values, withCompletionBlock: { (error, databaseRef) in
-//                if error != nil {
-//                    print(error)
-//                    return
-//                }
-//                print("user saved in firebse db")
-//            })
-//
-            
             self.performSegue(withIdentifier: "LoggedSegue", sender: nil)
-            
         }
+        
         
     }
     

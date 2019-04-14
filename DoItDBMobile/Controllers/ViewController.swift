@@ -404,6 +404,7 @@ extension ViewController : UISearchBarDelegate {
 extension ViewController : EditItemControllerDelegate {
     
     func didFinishEditItem(controller: ViewController, item: TodoItem) {
+        //self.saveItems()
         controller.tableView.reloadData()
         controller.searchBarTextDidEndEditing(controller.searchBar)
         navigationController?.popViewController(animated: true)

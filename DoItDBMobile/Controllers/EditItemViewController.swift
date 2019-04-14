@@ -74,8 +74,9 @@ class EditItemViewController: UIViewController, UINavigationControllerDelegate {
     //MARK : - fill Fields
     func fillFields() {
         if let realNewItem: TodoItem = newItem {
-            if let imageData: Data = realNewItem.image {
-                icone.image = UIImage(data: (imageData))
+            if let imageData: Data = try realNewItem.image {
+                let realImage = Data(base64Encoded: imageData)!
+                icone.image = UIImage(data: (realImage))
             } else {
                 icone.image = UIImage(named: "imagePickerIcone.png")
             }
@@ -121,7 +122,19 @@ class EditItemViewController: UIViewController, UINavigationControllerDelegate {
     
     // Image Picker
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        icone.image = info[.editedImage] as? UIImage
+        var selectedImageFromPicker : UIImage?
+        
+        if let editedImage = info[.editedImage] as? UIImage {
+            selectedImageFromPicker = editedImage
+        } else if let originalImage = info[.originalImage] as? UIImage {
+            selectedImageFromPicker = originalImage
+        }
+        
+        if let selectedImage = selectedImageFromPicker {
+            icone.image = selectedImage
+            newItem?.image = UIImage.pngData(selectedImage)()
+        }
+        
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -150,7 +163,7 @@ class EditItemViewController: UIViewController, UINavigationControllerDelegate {
             newItem?.category = categoryTextField.text
         }
         
-        let data = icone.image?.jpegData(compressionQuality: 0.5)
+        let data = icone.image?.pngData()
         let realData = data?.base64EncodedData()
         newItem?.setValue(realData, forKey: "image")
         
