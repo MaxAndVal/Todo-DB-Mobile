@@ -9,10 +9,11 @@
 import UIKit
 import CoreData
 import Firebase
+import IQKeyboardManagerSwift
 
 class ViewController: UIViewController {
     
-    //MARK : - Vars and IBOutlets
+    //MARK: - Vars and IBOutlets
     var navigationBar: UINavigationBar!
     var items = [TodoItem]()
     let context = DataManager.SharedDataManager.context
@@ -26,16 +27,15 @@ class ViewController: UIViewController {
     let orderByAZ = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Other"]
     let alphabeticArray = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
     
-    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     
-    //MARK : - ViewWilAppear
+    //MARK: - ViewWilAppear
     override func viewWillAppear(_ animated: Bool) {
         saveItems()
     }
     
-    //MARK : - ViewDidLoad
+    //MARK: - ViewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
         listToDisplaySorted()
@@ -43,9 +43,7 @@ class ViewController: UIViewController {
         if(self.categories.count == 0) {
             saveItems()
         }
-        
     }
-    
     
     @IBAction func logout() {
         do {
@@ -58,7 +56,7 @@ class ViewController: UIViewController {
         
     }
     
-    //MARK : - Init()
+    //MARK: - Init()
     required init?(coder aDecoder: NSCoder) {
         super.init(coder : aDecoder)
         dataManager.loadTodoItemsFromFireBase()
@@ -135,7 +133,6 @@ class ViewController: UIViewController {
             
             let newItem = TodoItem.newTodoItem(context: self.context, id: nil, title: newItemTitle, category: nil, checkmark: false, date: nil, image: nil, summary: nil)
             self.items.append(newItem)
-            //let tempTable = self.tempTableByCat(category: "none")
             if self.isFiltered {
                 self.filteredItems.append(newItem)
                 self.tableView.insertRows(at: [IndexPath(item: self.filteredItems.count - 1, section: 0)], with: .automatic)
@@ -204,7 +201,7 @@ class ViewController: UIViewController {
         items = loadGenericTodoItems(list: items, request: fetchRequest)
     }
     
-    //MARK : - Load items Methods
+    //MARK: - Load items Methods
     func loadGenericTodoItems(list : [TodoItem], request: NSFetchRequest<TodoItem> ) -> [TodoItem] {
         var resultList = list
         do {
@@ -321,8 +318,9 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        searchBar.resignFirstResponder()
         if(isFiltered) {
             filteredItems[indexPath.row].checkmark = !filteredItems[indexPath.row].checkmark
         } else {
@@ -355,7 +353,7 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-//MARK : - SearchBar
+//MARK: - SearchBar
 extension ViewController : UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
@@ -386,7 +384,7 @@ extension ViewController : UISearchBarDelegate {
     
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        if (searchBar.text?.count==0) {
+        if (searchBar.text?.count == 0) {
             isFiltered = false
             tableView.reloadData()
         } else {
@@ -404,7 +402,6 @@ extension ViewController : UISearchBarDelegate {
 extension ViewController : EditItemControllerDelegate {
     
     func didFinishEditItem(controller: ViewController, item: TodoItem) {
-        //self.saveItems()
         controller.tableView.reloadData()
         controller.searchBarTextDidEndEditing(controller.searchBar)
         navigationController?.popViewController(animated: true)
