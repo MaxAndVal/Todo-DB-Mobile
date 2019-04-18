@@ -1,3 +1,6 @@
 # Todo-DB-Mobile
 
-## Test
+## Fonctionnalités : 
+
+### * Login/Logout
+
