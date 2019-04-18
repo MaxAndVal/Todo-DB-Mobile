@@ -32,6 +32,8 @@ class ViewController: UIViewController {
     
     //MARK: - ViewWilAppear
     override func viewWillAppear(_ animated: Bool) {
+        dataManager.delegate = self
+        
         saveItems()
     }
     
@@ -43,6 +45,8 @@ class ViewController: UIViewController {
         if(self.categories.count == 0) {
             saveItems()
         }
+        dataManager.loadTodoItemsFromFireBase()
+        dataManager.loadCatFromFireBase()
     }
     
     @IBAction func logout() {
@@ -59,8 +63,16 @@ class ViewController: UIViewController {
     //MARK: - Init()
     required init?(coder aDecoder: NSCoder) {
         super.init(coder : aDecoder)
-        dataManager.loadTodoItemsFromFireBase()
-        dataManager.loadCatFromFireBase()
+//        dataManager.loadTodoItemsFromFireBase(completionHandler: ({ (isFinished) in
+//            if isFinished {
+//                self.tableView.reloadData()
+//            }
+//        }))
+//        dataManager.loadCatFromFireBase { (isFinished) in
+//            if isFinished {
+//                self.tableView.reloadData()
+//            }
+//        }
         loadItems()
     }
     
@@ -105,7 +117,7 @@ class ViewController: UIViewController {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd MMM yy"
         dateFormatter.timeZone = TimeZone.autoupdatingCurrent
-        self.loadItems()
+        //self.loadItems()
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .none
         dateFormatter.locale = Locale(identifier: "fr_FR")
@@ -268,7 +280,7 @@ extension ViewController : UITableViewDelegate, UITableViewDataSource {
             title = "Date"
         default:
             if(section >= categories.count){
-                title = "a catégoriser"
+                title = "À catégoriser"
             }else{
                 title = categories[section].catName ?? ""
             }
@@ -392,7 +404,7 @@ extension ViewController : UISearchBarDelegate {
             isFiltered = true
             
             let fetchRequest: NSFetchRequest<TodoItem> = NSFetchRequest<TodoItem>(entityName: "TodoItem")
-            fetchRequest.predicate = NSPredicate(format: "title contains[c] %@", self.searchBar.text ?? "")
+            fetchRequest.predicate = NSPredicate(format: "title contains[cd] %@", self.searchBar.text ?? "")
             self.filteredItems = loadGenericTodoItems(list: self.filteredItems, request: fetchRequest)
             self.tableView.reloadData()
         }
@@ -408,3 +420,12 @@ extension ViewController : EditItemControllerDelegate {
     }
 }
 
+extension ViewController : ViewControllerReloadDataDelegate {
+    
+    func refreshTableView() {
+        self.loadItems()
+        self.tableView.reloadData()
+    }
+    
+    
+}
