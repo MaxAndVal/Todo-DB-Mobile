@@ -2,7 +2,6 @@
 
 ## Fonctionnalités :
 
-
 1. Login/Logout :
 
 Prise en charge d'un `Login` et d'un `Logout` par adresse `Email` par l'utilisation de FireBase.
