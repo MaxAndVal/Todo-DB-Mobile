@@ -46,7 +46,7 @@ La mise en place de CoreData a été laborieuse au début, notamment lorsque le 
 
 3. Parsing des images de png en Data : 
 
-Cette partie a été assez rude car il a fallut rendre compatibles les data récupérées sur FireBase (lien vers une URL pointant vers le fichier en .png) et lors mise au format CoreData (NSData 64 bits).
+Cette partie a été assez rude car il a fallut rendre compatibles les data récupérées sur `FireBase` (lien vers une `URL` pointant vers le fichier en `.png`) et lors mise au format CoreData (`NSData 64 bits`).
 
 ## Architecture :
 
