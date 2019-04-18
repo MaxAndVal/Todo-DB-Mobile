@@ -44,6 +44,10 @@ La partie la plus difficile a été d'inclure `FireBase` et `CoreData` en même 
 
 La mise en place de CoreData a été laborieuse au début, notamment lorsque le choix d'intégrer une classe DataManager n'avit pas était fait. Mais globalement une fois le concept de context compris les difficultés ont été résolues. 
 
+3. Parsing des images de png en Data : 
+
+Cette partie a été assez rude car il a fallut rendre compatibles les data récupérées sur FireBase (lien vers une URL pointant vers le fichier en .png) et lors mise au format CoreData (NSData 64 bits).
+
 ## Architecture :
 
 1. DataManager :
