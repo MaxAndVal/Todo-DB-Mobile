@@ -13,7 +13,10 @@ import Firebase
 
 class DataManager {
     
+    typealias CompletionHandler = (Bool) -> Void
+    
     var ref: DatabaseReference!
+    var delegate: ViewControllerReloadDataDelegate!
     static let SharedDataManager = DataManager()
     
     var context: NSManagedObjectContext {
@@ -43,17 +46,19 @@ class DataManager {
     
     // MARK: - Core Data Saving support
     
-    fileprivate func saveContext() {
+    fileprivate func saveContext() -> Bool {
         let context = persistentContainer.viewContext
         if context.hasChanges {
             do {
                 try context.save()
+                return true
             } catch {
                 
                 let nserror = error as NSError
                 fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
             }
         }
+        return false
     }
     
     func saveData() {
@@ -96,7 +101,7 @@ class DataManager {
                         self.ref.child("users").child(user.uid).child("userData").child("TodoItems").child((item as! TodoItem).id!).updateChildValues(updatedTodoItem as [AnyHashable : Any])
                     }
                 }
-                
+                self.saveData()
             }
             print("TodoItems saved to Firebase")
         } catch let error as NSError {
@@ -144,7 +149,9 @@ class DataManager {
             }
             print("LIST : ", catList)
             self.saveData()
+            
         }, withCancel: nil)
+        
     }
     
     func deleteTodoItemsFromFireBase(todoItem : TodoItem){
@@ -174,7 +181,7 @@ class DataManager {
                     
                     if imageString != nil {
                         let storeRef = Storage.storage().reference(forURL: imageString!)
-                        storeRef.getData(maxSize: 1*2048*2048, completion: { (data, error) in
+                        storeRef.getData(maxSize: 1*1600*1600, completion: { (data, error) in
                             if error != nil {
                                 print("error with image from firestorage", error!)
                                 return
@@ -183,24 +190,31 @@ class DataManager {
                             if let potentiallyItem : TodoItem = self.getId(id: id) {
                                 potentiallyItem.image = image
                                 print("Existing Item fetch from FireBase with image", potentiallyItem)
+                                self.delegate.refreshTableView()
                             } else {
                                 let newItem = TodoItem.newTodoItem(context: self.context, id: id, title: title, category: category, checkmark: checkmark ?? false, date: date, image: image, summary: summary)
                                 print("New Item fetch from FireBase with image", newItem)
+                                self.delegate.refreshTableView()
                             }
                         })
                     } else if image == nil {
                         if let potentiallyItem : TodoItem = self.getId(id: id) {
                             print("Existing Item fetch from FireBase", potentiallyItem)
-                            
+                            self.delegate.refreshTableView()
+
                         } else {
                             let newItem = TodoItem.newTodoItem(context: self.context, id: id, title: title, category: category, checkmark: checkmark ?? false, date: date, image: nil, summary: summary)
                             print("New Item fetch from FireBase", newItem)
+                            self.delegate.refreshTableView()
                         }
                     }
-                    self.saveData()
+                    
                 }
+            self.saveData()
             }
+            
         }, withCancel: nil)
+        
     }
     
     func getId(id :String?) -> TodoItem? {
@@ -300,4 +314,9 @@ extension TodoItem {
         let boolCheckmark = self.checkmark ? 1 : 0
         return ["id":self.id, "title": self.title, "date": self.date, "summary": self.summary, "checkmark": boolCheckmark, "category": self.category]
     }
+}
+
+
+protocol ViewControllerReloadDataDelegate {
+    func refreshTableView()
 }

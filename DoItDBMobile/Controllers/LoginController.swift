@@ -19,11 +19,10 @@ class LoginController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loginRegisterBtn.titleLabel?.text = "Register"
+        loginRegisterBtn.setTitle("Register", for: .normal)
         segmentedController.selectedSegmentIndex = 1
         segmentedController.addTarget(self, action: #selector(handleLoginRegisterChoice), for: .valueChanged)
         loginRegisterBtn.addTarget(self, action: #selector(handleLoginOrRegister), for: .touchUpInside)
-        
         isAlreadyLogged()
     }
     
@@ -49,10 +48,10 @@ class LoginController: UIViewController {
     func handleLoginRegisterChoice() {
         if segmentedController.selectedSegmentIndex == 0 {
             nameTF.isHidden = true
-            loginRegisterBtn.titleLabel?.text = "Login"
+            loginRegisterBtn.setTitle("Login", for: .normal)
         } else {
             nameTF.isHidden = false
-            loginRegisterBtn.titleLabel?.text = "Register"
+            loginRegisterBtn.setTitle("Register", for: .normal)
         }
         
     }
@@ -80,7 +79,6 @@ class LoginController: UIViewController {
             print("user logged succesfully")
             self.performSegue(withIdentifier: "LoggedSegue", sender: nil)
         }
-        
         
     }
     
@@ -112,9 +110,6 @@ class LoginController: UIViewController {
                 print("user saved in firebse db")
                 self.performSegue(withIdentifier: "LoggedSegue", sender: nil)
             })
-
-            
-            
             
         }
         
