@@ -16,6 +16,8 @@ Utilisation de `realTime DataBase` et de `FireStorage`
 
 4. SearchBar :
 
+Placée en haut de l'application, elle permet de rechercher les TodoItems par leur nom. Elle n'est pas sensible à la case ni aux accents.
+
 5. Tri :
 
 Par `catégorie`, `date` et ordre `alphabétique`
@@ -46,6 +48,10 @@ La mise en place de CoreData a été laborieuse au début, notamment lorsque le 
 3. Parsing des images de png en Data : 
 
 Cette partie a été assez rude car il a fallut rendre compatibles les data récupérées sur `FireBase` (lien vers une `URL` pointant vers le fichier en `.png`) et lors mise au format CoreData (`NSData 64 bits`).
+
+4. Table et Section :
+
+La possibilité de découper la liste en plusieurs sections ne fut pas un problème et assez simple à mettre en place, cependant, le fait de cliquer/supprimer un item dans une section fut assez compliqué à mettre en place, car la place de l'item dans la section était diffèrent de la place de se même item dans la liste global.
 
 ## Architecture :
 
